@@ -17,6 +17,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core.apps.CoreConfig',
+    'crowdfunding.apps.CrowdfundingConfig',
+    'website.apps.WebsiteConfig',
 ]
 
 MIDDLEWARE = [
