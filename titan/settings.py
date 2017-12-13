@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     'crowdfunding.apps.CrowdfundingConfig',
     'website.apps.WebsiteConfig',
     'django_countries',
+    'website.apps.WebsiteConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

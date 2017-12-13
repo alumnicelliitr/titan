@@ -49,3 +49,6 @@ env/
 
 # mkdocs documentation
 /site
+
+#image folder
+img/
