@@ -19,6 +19,7 @@ class Event(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField('Event Details')
     link = models.URLField(verbose_name='External links')
+    venue = models.CharField(max_length=100, default=None, blank=True)
     date = models.DateTimeField(verbose_name='Event Date', default=None)
 
     def __str__(self):
