@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
-from core.models import User,UnivAlum
+from core.models import User
 
 import uuid
 import os
@@ -18,31 +18,34 @@ def get_file_path(instance, filename):
     return '{0}/{1}'.format("projecttimeline", str(instance.title)+str(ext))
 
 
-class AlumFund(models.Model):
-    name = models.CharField(max_length=100,verbose_name="Alumni Name")
-    funds = models.IntegerField(verbose_name="Funds Given")
+class Alum(models.Model):
+    user = models.OneToOneField(User,verbose_name="Alumni",on_delete=models.CASCADE,primary_key=True)
     def __str__(self):
-        return '%s' % (self.name)
+        return '%s' % (self.user.name)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["user"]
         
+class Student(models.Model):
+    user = models.OneToOneField(User,verbose_name="Student",on_delete=models.CASCADE,primary_key=True)
+    def __str__(self):
+        return '%s' % (self.user.name)
 
+    class Meta:
+        ordering = ["user"]        
+        
 
 class StudentsProject(models.Model):
     """
     Model representing a Student_project
     """
     title = models.CharField(max_length=200,verbose_name="Title")
-    student = models.ManyToManyField(User,verbose_name="Student",related_name="StudentUser+",null=True, blank=True)
-    alumni = models.ForeignKey(User,verbose_name="Alumni",related_name="AlumniUser+",null=True, blank=True)
+    students = models.ManyToManyField(Student,verbose_name="Students",related_name="projects")
     timeline = models.FileField(upload_to=get_file_path)
     project_image = models.ImageField(upload_to=get_image_path, blank=True, null=True)
-    funds = models.IntegerField(verbose_name="Allocated Amount ")
     description = models.TextField(max_length=1000,verbose_name="Description")
-    alum_funds = models.ManyToManyField(AlumFund,help_text="Alumni who funded for this project",verbose_name="Funds Alumni",related_name="AlumFund",null=True, blank=True)
-    alum_votes = models.ManyToManyField(User,help_text="Alumni who voted for this project",verbose_name="Votes Alumni",related_name="AlumVote+",null=True, blank=True)    
-
+    alum_votes = models.ManyToManyField(Alum,help_text="Alumni who voted for this project",verbose_name="Votes Alumni",related_name="votedprojects")    
+    
    
     def __str__(self):
         """
@@ -52,3 +55,18 @@ class StudentsProject(models.Model):
     
     class Meta:
         ordering = ["title"]    
+
+
+class Fund(models.Model):
+    funds = models.IntegerField()
+    project = models.ForeignKey(StudentsProject,related_name="Funds",verbose_name="Project Name")
+    alumni = models.ForeignKey(Alum,related_name="Funds",verbose_name="Alumni Name")    
+    
+    def __str__(self):
+        return '%s' % (self.funds)
+
+    class Meta:
+        ordering = ["funds"]   
+        
+        
+
