@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
-from core.models import User
+from core.models import Alum,Student
 
 import uuid
 import os
@@ -18,22 +18,6 @@ def get_file_path(instance, filename):
     return '{0}/{1}'.format("projecttimeline", str(instance.title)+str(ext))
 
 
-class Alum(models.Model):
-    user = models.OneToOneField(User,verbose_name="Alumni",on_delete=models.CASCADE,primary_key=True)
-    def __str__(self):
-        return '%s' % (self.user.name)
-
-    class Meta:
-        ordering = ["user"]
-        
-class Student(models.Model):
-    user = models.OneToOneField(User,verbose_name="Student",on_delete=models.CASCADE,primary_key=True)
-    def __str__(self):
-        return '%s' % (self.user.name)
-
-    class Meta:
-        ordering = ["user"]        
-        
 
 class StudentsProject(models.Model):
     """
