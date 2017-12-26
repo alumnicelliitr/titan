@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django_countries',
     'website.apps.WebsiteConfig',
     'rest_framework',
+    'django_countries',
 ]
 
 MIDDLEWARE = [
