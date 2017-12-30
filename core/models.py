@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
-import datetime
-
+from datetime import datetime
 from django_countries.fields import CountryField
 
 
@@ -22,15 +21,15 @@ class UserManager(BaseUserManager):
 
 class TempUser(models.Model):
     YEAR_CHOICES = []
-    for r in range(1940, (datetime.datetime.now().year + 5)):
+    for r in range(1940, (datetime.now().year + 5)):
         YEAR_CHOICES.append((r, r))
 
     name = models.CharField(max_length=50, verbose_name="Name")
     email = models.EmailField(max_length=255, unique=True, verbose_name='Email Address')
-    enr_no = models.IntegerField(primary_key=True, verbose_name='Enrollment Number')
+    enr_no = models.IntegerField(null=True, verbose_name='Enrollment Number')
     batch = models.IntegerField(choices=YEAR_CHOICES, verbose_name='Batch')
-    degree_photo = models.ImageField(upload_to='degree_photo', blank=True, null=True)
-    verified = models.BooleanField(default="false")
+    degree_photo = models.ImageField(upload_to='degree_photo')
+    verified = models.BooleanField(default=False)
 
 
 class CampusGroup(models.Model):
@@ -48,9 +47,9 @@ class CampusGroup(models.Model):
         return self.get_group_display()
 
 
-class User(models.Model):
+class User(AbstractBaseUser):
     YEAR_CHOICES = []
-    for r in range(1940, (datetime.datetime.now().year + 5)):
+    for r in range(1940, (datetime.now().year + 5)):
         YEAR_CHOICES.append((r, r))
 
     BRANCHES = (
@@ -78,11 +77,13 @@ class User(models.Model):
     email = models.EmailField(max_length=255, unique=True, verbose_name='Email Address')
     enr_no = models.IntegerField(primary_key=True, verbose_name='Enrollment Number')
     image = models.ImageField(upload_to='users', blank=True, null=True)
-    dob = models.DateTimeField(verbose_name='Date Of Birth')
+    dob = models.DateTimeField(null=True, blank=True, verbose_name='Date Of Birth')
     batch = models.IntegerField(choices=YEAR_CHOICES, verbose_name='Batch')
     branch = models.CharField(max_length=3, choices=BRANCHES, verbose_name="Branch")
-    interest = models.TextField(max_length=250, verbose_name="Interest")
-    campus_groups = models.ManyToManyField(CampusGroup, related_name='users')
+    interest = models.TextField(null=True, blank=True, max_length=250, verbose_name="Interest")
+    campus_groups = models.ManyToManyField(CampusGroup, related_name='users', blank=True)
+
+    USERNAME_FIELD = 'name'
 
     objects = UserManager()
 
@@ -96,12 +97,17 @@ class University(models.Model):
     def __str__(self):
         return str(self.univ)
 
+    class Meta:
+        verbose_name_plural = "Universities"
 
 class Company(models.Model):
     name = models.CharField(max_length=25, verbose_name="Company Name")
 
     def __str__(self):
         return str(self.name)
+
+    class Meta:
+        verbose_name_plural = "Companies"
 
 
 class Location(models.Model):
