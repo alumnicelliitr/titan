@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django_countries.fields import CountryField
+from core.models import User
 from django.db.models.fields.related import (
     OneToOneField,
 )
@@ -83,7 +84,7 @@ class Mou(models.Model):
     Memorandum of Understanding with another universities in different countries
     """
     name = models.CharField(max_length=100, verbose_name='University Name')
-    country =CountryField(blank_label='(select country)')
+    country = CountryField(blank_label='(select country)')
     letter = models.FileField(max_length=None, upload_to='mou/', default=None)
 
     # link = models.URLField(default=None)
@@ -117,31 +118,10 @@ class Headline(models.Model):
         return self.title
 
 
-# custom one to one field with flag to differentiate between different kind of initiatives
-class AddFlagOneToOneField(OneToOneField):
-    def __init__(self, *args, **kwargs):
-        self.flag_name = kwargs.pop('flag_name')
-        super(AddFlagOneToOneField, self).__init__(*args, **kwargs)
-
-    def contribute_to_related_class(self, cls, related):
-        super(AddFlagOneToOneField, self).contribute_to_related_class(cls, related)
-
-        def flag(model_instance):
-            return hasattr(model_instance, related.get_accessor_name())
-
-        setattr(cls, self.flag_name, property(flag))
-
-    def deconstruct(self):
-        name, path, args, kwargs = super(AddFlagOneToOneField, self).deconstruct()
-        kwargs['flag_name'] = self.flag_name
-        return name, path, args, kwargs
-
-
 class Initiative(models.Model):
     """
     various initiatives of IARC.
     """
-
     title = models.CharField(max_length=200, default=None)
     description = models.TextField(verbose_name="Small Description of Initiative", default=None)
 
@@ -158,13 +138,6 @@ class VideoRepository(models.Model):
     """
     The Video Repository Initiative it can contain one or more videos
     """
-    initiative = AddFlagOneToOneField(
-        Initiative,
-        related_name='videos',
-        on_delete=models.CASCADE,
-        primary_key=True,
-        flag_name='is_video_repository',
-    )
     image = models.ImageField(upload_to=initiative_image_directory_path, default=None)
 
     def __str__(self):
@@ -187,16 +160,20 @@ class Publication(models.Model):
         (KNOW_YOUR_ALUMNI, 'Know Your Alumni'),
         (SHARE_YOUR_STORY, 'Share Your Story'),
     )
-
-    initiative = AddFlagOneToOneField(
-        Initiative,
-        related_name='publications',
-        on_delete=models.CASCADE,
-        primary_key=True,
-        flag_name='is_publication',
-    )
     type = models.CharField(choices=TYPES_OF_PUBLICATIONS, max_length=3, default=None)
     link = models.URLField(default=None, verbose_name='External Link')
 
     def __str__(self):
         return "%s the initiative title" % self.initiative.title
+
+
+class KnowYourAlumni(models.Model):
+    user = models.ForeignKey(User, related_name='', on_delete=models.CASCADE)
+    link = models.URLField(default=None, blank=True, verbose_name='External Link')
+    description = models.TextField(default=None)
+
+
+class ShareYourStory(models.Model):
+    # user = models.ForeignKey(User, related_name='', on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, default=None, verbose_name='Story Title')
+    description = models.TextField(default=None)

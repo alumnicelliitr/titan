@@ -5,4 +5,4 @@ python-env==1.0.0
 django-countries==5.0
 pillow==4.3.0
 djangorestframework==3.7.3
-django-countries=5.0q
+django-countries==5.0
