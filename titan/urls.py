@@ -19,6 +19,7 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/core/', include('core.urls', namespace='Core')),
+    url(r'^oauth/', include('social_django.urls', namespace='social')),
     # url(r'^api/crowdfunding/', include('crowdfunding.urls', namespace='Crowdfunding')),
     # url(r'^api/website/', include('website.urls', namespace='Website'))
 ]
