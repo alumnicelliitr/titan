@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from core.models import *
 from django.db import models
 from django_countries.fields import CountryField
 from core.models import User
-from django.db.models.fields.related import (
-    OneToOneField,
-)
+import os
 
 
 class NewsLetter(models.Model):
@@ -146,6 +145,7 @@ class VideoRepository(models.Model):
 
 class Video(models.Model):
     title = models.CharField(max_length=50, verbose_name='Video Title')
+    mainPage = models.BooleanField(default=False)
     VideoRepository = models.ForeignKey(VideoRepository, related_name='videos', on_delete=models.CASCADE)
     description = models.CharField(max_length=50, verbose_name='Video Description', blank=True)
 
@@ -153,22 +153,8 @@ class Video(models.Model):
         return self.title
 
 
-class Publication(models.Model):
-    KNOW_YOUR_ALUMNI = 'KYA'
-    SHARE_YOUR_STORY = 'SYS'
-    TYPES_OF_PUBLICATIONS = (
-        (KNOW_YOUR_ALUMNI, 'Know Your Alumni'),
-        (SHARE_YOUR_STORY, 'Share Your Story'),
-    )
-    type = models.CharField(choices=TYPES_OF_PUBLICATIONS, max_length=3, default=None)
-    link = models.URLField(default=None, verbose_name='External Link')
-
-    def __str__(self):
-        return "%s the initiative title" % self.initiative.title
-
-
 class KnowYourAlumni(models.Model):
-    user = models.ForeignKey(User, related_name='', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='abouts', on_delete=models.CASCADE)
     link = models.URLField(default=None, blank=True, verbose_name='External Link')
     description = models.TextField(default=None)
 
@@ -177,3 +163,58 @@ class ShareYourStory(models.Model):
     # user = models.ForeignKey(User, related_name='', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, default=None, verbose_name='Story Title')
     description = models.TextField(default=None)
+    link = models.URLField(default=None, verbose_name='Article Link')
+
+
+class Node(models.Model):
+    url_name = models.CharField(max_length=50)  # Would be used for URL
+    title = models.CharField(max_length=50)  # Would be used for Display Title
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='Parent')
+    visibility = models.BooleanField(default=True)
+    external_url = models.CharField(max_length=100, null=True, blank=True)
+    level = models.IntegerField(default=0)
+    content = models.TextField(default='')
+
+    def __str__(self):
+        return self.title + " @ " + str(self.level)
+
+    class Meta:
+        app_label = 'website'
+
+
+def get_file_path(instance, filename):
+    name, ext = os.path.splitext(filename)
+    return '{0}/{1}'.format("img/alumnicard", str(instance.title) + str(ext))
+
+
+class AlumniCard(models.Model):
+
+    ADDRESS_CHOICES = (
+        ("Office Address", "Office Address"),
+        ("Residence Address", "Residence Address")
+    )
+
+    DATE_INPUT_FORMATS = ('%d-%m-%Y', '%Y-%m-%d')
+    YEAR_CHOICES = ((x, x) for x in range(1847, 2017))
+    first_name = models.CharField(max_length=255)
+    middle_name = models.CharField(max_length=255, blank=True)
+    last_name = models.CharField(max_length=255)
+    dob = models.DateField()
+    degree_name = models.CharField(max_length=255)
+    degree_branch = models.CharField(max_length=255)
+    degree_year = models.IntegerField(choices=YEAR_CHOICES)
+    present_desig = models.CharField(max_length=255)
+    present_dept = models.CharField(max_length=255)
+    present_office = models.TextField()
+    present_residence = models.TextField()
+    delivery_address = models.TextField()
+    telephone = models.CharField(max_length=20, blank=True)
+    mobile = models.CharField(max_length=20)
+    email = models.EmailField()
+    address_for_correspondence = models.CharField(choices=ADDRESS_CHOICES, max_length=50)
+    photo = models.ImageField(blank=False, upload_to=get_file_path)
+    photo_sign = models.ImageField(blank=False, upload_to=get_file_path)
+    photo_degree = models.ImageField(blank=False, upload_to=get_file_path)
+
+    def __str__(self):
+        return self.first_name + " " + self.middle_name + " " + self.last_name

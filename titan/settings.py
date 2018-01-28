@@ -20,8 +20,6 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'crowdfunding.apps.CrowdfundingConfig',
     'website.apps.WebsiteConfig',
-    'django_countries',
-    'website.apps.WebsiteConfig',
     'rest_framework',
     'django_countries',
 ]
