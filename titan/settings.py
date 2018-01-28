@@ -10,6 +10,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = "core.User"
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -17,12 +19,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'core.apps.CoreConfig',
     'crowdfunding.apps.CrowdfundingConfig',
     'website.apps.WebsiteConfig',
     'django_countries',
     'social_django',
     'rest_framework',
+    'django_extensions',
+    'sorl.thumbnail',
+    'newsletter',
 ]
 
 MIDDLEWARE = [
@@ -59,8 +65,9 @@ TEMPLATES = [
 
 LOGIN_URL = 'api/core/login'
 LOGOUT_URL = 'api/core/logout'
-LOGIN_REDIRECT_URL = '' # TODO: give the frontend url for redirect
+LOGIN_REDIRECT_URL = '/home' # TODO: give the frontend url for redirect
 
+SOCIAL_AUTH_USER_MODEL = 'core.User'
 SOCIAL_AUTH_FACEBOOK_KEY = ''  # App ID
 SOCIAL_AUTH_FACEBOOK_SECRET = ''  # App Secret
 
@@ -105,3 +112,5 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+SITE_ID = 1 #Just for testing purpose

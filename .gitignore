@@ -49,3 +49,5 @@ env/
 
 # mkdocs documentation
 /site
+
+media/*

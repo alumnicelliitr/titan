@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from datetime import datetime
 from django_countries.fields import CountryField
-
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -17,6 +17,11 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save()
         return user
+
+    def create_superuser(self, email, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, password, **extra_fields)
 
 
 class TempUser(models.Model):
@@ -31,6 +36,8 @@ class TempUser(models.Model):
     degree_photo = models.ImageField(upload_to='degree_photo')
     verified = models.BooleanField(default=False)
 
+    def __str__(self):
+        return str(self.name)
 
 class CampusGroup(models.Model):
     GROUPS = (
@@ -47,7 +54,7 @@ class CampusGroup(models.Model):
         return self.get_group_display()
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     YEAR_CHOICES = []
     for r in range(1940, (datetime.now().year + 5)):
         YEAR_CHOICES.append((r, r))
@@ -81,14 +88,26 @@ class User(AbstractBaseUser):
     batch = models.IntegerField(choices=YEAR_CHOICES, verbose_name='Batch')
     branch = models.CharField(max_length=3, choices=BRANCHES, verbose_name="Branch")
     interest = models.TextField(null=True, blank=True, max_length=250, verbose_name="Interest")
+    gender = models.CharField(null=True, blank=True, max_length=1, choices=(('F', 'Female'), ('M', 'Male')), verbose_name="gender")
     campus_groups = models.ManyToManyField(CampusGroup, related_name='users', blank=True)
 
-    USERNAME_FIELD = 'name'
+    is_staff = models.BooleanField(
+        verbose_name='Staff Status',
+        default=False,
+        help_text='Designates whether the user can log into admin site.',
+    )
+
+    REQUIRED_FIELDS = ['name', 'email', 'batch', 'branch']
+
+    USERNAME_FIELD = 'enr_no'
 
     objects = UserManager()
 
+    def get_short_name(self):
+        return self.name
+
     def __str__(self):
-        return str(self.name)
+        return str(self.enr_no)
 
 
 class University(models.Model):
