@@ -54,3 +54,5 @@ env/
 img/
 
 media/*
+
+venv
