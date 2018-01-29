@@ -85,8 +85,7 @@ class Mou(models.Model):
     name = models.CharField(max_length=100, verbose_name='University Name')
     country = CountryField(blank_label='(select country)')
     letter = models.FileField(max_length=None, upload_to='mou/', default=None)
-
-    # link = models.URLField(default=None)
+    link = models.URLField(verbose_name='University Website Link')
 
     def __str__(self):
         return self.name

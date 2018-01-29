@@ -25,11 +25,6 @@ urlpatterns = [
 
     # Share Your Story
     url(r'^shareYourStory/$', ShareYourStoryView.as_view(), name='know-your-stories'),
-    # ALumni can register for Share You Story
-    url(r'^shareYourStory/create$', ShareYourStoryCreateView.as_view(), name='know-your-stories-create'),
-
-    # Added pages
-    url(r'^test$', IndexView.as_view()),
-    url(r'^test1$', index),
-    url(r'^(?P<level0>[a-z]+)/(?P<level1>[a-z]+)$', level),
+    # Alumni can register for Share You Story
+    url(r'^shareYourStory/create$', ShareYourStoryCreateView.as_view(), name='share-your-stories-create'),
 ]
