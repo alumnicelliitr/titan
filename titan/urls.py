@@ -14,11 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
+from django.conf.urls import url, include
 from django.contrib import admin
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    # url(r'^api/core/', include('core.urls', namespace='Core')),
+    url(r'^api/core/', include('core.urls', namespace='Core')),
+    url(r'^oauth/', include('social_django.urls', namespace='social')),
+    url(r'^newsletter/', include('newsletter.urls')),
     # url(r'^api/crowdfunding/', include('crowdfunding.urls', namespace='Crowdfunding')),
-    # url(r'^api/website/', include('website.urls', namespace='Website'))
+    url(r'^api/website/', include('website.urls', namespace='Website'))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
