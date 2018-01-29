@@ -26,10 +26,9 @@ class LoginSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         user = authenticate(enr_no=enr, password=password)
-        print(user)
+
         if not user:
             raise AuthenticationFailed
-
         attrs['user'] = user
         return attrs
 

@@ -35,6 +35,14 @@ class Login(APIView):
 
         return Response(user_data, status=status.HTTP_202_ACCEPTED)
 
+class LoggedInUser(APIView):
+    def get(self, request):
+        if request.user.is_authenticated():
+            user_data = UserSerializer(request.user).data
+            return Response(user_data, status=status.HTTP_202_ACCEPTED)
+
+        return Response('logged_out', status=status.HTTP_401_UNAUTHORIZED)
+
 class Logout(APIView):
 
     def post(request):
