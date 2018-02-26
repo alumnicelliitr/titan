@@ -24,36 +24,6 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class TempUser(models.Model):
-    YEAR_CHOICES = []
-    for r in range(1940, (datetime.now().year + 5)):
-        YEAR_CHOICES.append((r, r))
-
-    name = models.CharField(max_length=50, verbose_name="Name")
-    email = models.EmailField(max_length=255, unique=True, verbose_name='Email Address')
-    enr_no = models.IntegerField(null=True, verbose_name='Enrollment Number')
-    batch = models.IntegerField(choices=YEAR_CHOICES, verbose_name='Batch')
-    degree_photo = models.ImageField(upload_to='degree_photo')
-    verified = models.BooleanField(default=False)
-
-    def __str__(self):
-        return str(self.name)
-
-class CampusGroup(models.Model):
-    GROUPS = (
-        ('SDS', 'SDSLabs'),
-        ('MDG', 'Mobile Development Group'),
-        ('IARC', 'IARC'),
-        ('GG', 'Geek Gazette'),
-        ('WONA', 'Watch Out News Agency')
-    )
-
-    group = models.CharField(max_length=4, choices=GROUPS, verbose_name="Group")
-
-    def __str__(self):
-        return self.get_group_display()
-
-
 class User(AbstractBaseUser, PermissionsMixin):
     YEAR_CHOICES = []
     for r in range(1940, (datetime.now().year + 5)):
@@ -76,28 +46,50 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('MSM', 'Applied Mathematics'),
         ('GT', 'Geological Technology'),
         ('GPT', 'Geophysical Technology'),
-        ('PHD', 'PHD'),
-        ('PBT', 'PHD Biotechnology'),
     )
 
+    COURSES = (
+        ('B.Tech', 'B.Tech'),
+        ('M.Tech', 'M.Tech'),
+        ('PHD', 'PHD'),
+    )
+
+    HOSTELS = (
+        ('RB', 'Rajiv Bhawan'),
+        ('RJB', 'Rajendra Bhawan'),
+        ('RKB', 'Radhakrishna Bhawan'),
+        ('KUB', 'Kautley Bhawan'),
+        ('RVB', 'Ravindra Bhawan'),
+        ('JB', 'Jawahar Bhawan'),
+        ('GNB', 'Ganga Bhawan'),
+        ('GB', 'Govind Bhawan'),
+        ('KB', 'Kasturba Bhawan'),
+        ('SB', 'Sarojini Bhawan'),
+    )
     name = models.CharField(max_length=50, verbose_name="Name")
-    email = models.EmailField(max_length=255, unique=True, verbose_name='Email Address')
+    email = models.EmailField(max_length=255, unique=True, verbose_name='Official Email Address')
+    email_1 = models.EmailField(max_length=255, unique=True, verbose_name='Unofficial Email Address', blank=True, null=True)
     enr_no = models.IntegerField(primary_key=True, verbose_name='Enrollment Number')
     image = models.ImageField(upload_to='users', blank=True, null=True)
     dob = models.DateTimeField(null=True, blank=True, verbose_name='Date Of Birth')
-    batch = models.IntegerField(choices=YEAR_CHOICES, verbose_name='Batch')
+    joining_date = models.DateTimeField(null=True, blank=True, verbose_name='Date Of Joining')
+    leaving_date = models.DateTimeField(null=True, blank=True, verbose_name='Date Of Leaving')
     branch = models.CharField(max_length=3, choices=BRANCHES, verbose_name="Branch")
-    interest = models.TextField(null=True, blank=True, max_length=250, verbose_name="Interest")
+    course = models.CharField(max_length=5, choices=COURSES, verbose_name="Course")
+    hostel = models.CharField(max_length=3, choices=HOSTELS, verbose_name="Hostel", null=True, blank=True)
+    room_no = models.CharField(max_length=6, null=True, blank=True)
     gender = models.CharField(null=True, blank=True, max_length=1, choices=(('F', 'Female'), ('M', 'Male')), verbose_name="gender")
-    campus_groups = models.ManyToManyField(CampusGroup, related_name='users', blank=True)
-
+    degree = models.FileField(upload_to='degrees', blank=True, null=True)
+    aadhar_no = models.BigIntegerField(blank=True, null=True)
+    is_alumni = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     is_staff = models.BooleanField(
         verbose_name='Staff Status',
         default=False,
         help_text='Designates whether the user can log into admin site.',
     )
 
-    REQUIRED_FIELDS = ['name', 'email', 'batch', 'branch']
+    REQUIRED_FIELDS = ['name', 'email', 'batch', 'branch', 'course']
 
     USERNAME_FIELD = 'enr_no'
 
@@ -110,68 +102,131 @@ class User(AbstractBaseUser, PermissionsMixin):
         return str(self.enr_no)
 
 
-class University(models.Model):
-    univ = models.TextField(max_length=25, verbose_name="Universities")
+class Alumni(models.Model):
+    user = models.OneToOneField(User, related_name='alum', verbose_name="Alumni", on_delete=models.CASCADE,
+                                primary_key=True)
+    alumni_card = models.BooleanField(default="false", verbose_name="Alumni Card")
+    is_verified = models.BooleanField(default=False)
+    sign = models.ImageField(upload_to='alum_sign', blank=True, null=True, verbose_name='Signature')
+    short_bio = models.CharField(max_length=200)
 
     def __str__(self):
-        return str(self.univ)
+        return '%s' % self.user.name
 
     class Meta:
-        verbose_name_plural = "Universities"
+        ordering = ["user"]
 
-class Company(models.Model):
-    name = models.CharField(max_length=25, verbose_name="Company Name")
+
+class Team(models.Model):
+    TYPES = (
+        ('C', 'Current'),
+        ('P', 'Passed'),
+    )
+    user = models.OneToOneField(User, related_name='team', verbose_name="Team member", on_delete=models.CASCADE,
+                                primary_key=True)
+    member_type = models.CharField(max_length=10, choices=TYPES, verbose_name="Member Type")
+    role = models.CharField(max_length=20)
+    short_bio = models.TextField()
+
+    def __str__(self):
+        return '%s' % self.user.name
+
+    class Meta:
+        ordering = ["user"]        
+
+
+class Contact(models.Model):
+    TYPES = (
+        ('Mob', 'Mobile No.'),
+        ('Email', 'Email'),
+    )
+    contact_type = models.CharField(max_length=10, choices=TYPES, verbose_name="Contact Type")
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    value = models.TextField()
+    def __str__(self):
+        return str(self.contact_type)
+
+    class Meta:
+        verbose_name_plural = "Contacts"
+        ordering = ["user"]
+
+class Social(models.Model):
+    TYPES = (
+        ('FB', 'Facebook'),
+        ('TW', 'Twitter'),
+        ('IN', 'Instagram'),
+        ('SC', 'Snap Chat'),
+        ('LI', 'Linked In'),
+        ('GH', 'Github'),
+    )
+    social_type = models.CharField(max_length=10, choices=TYPES, verbose_name="Contact Type")
+    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    value = models.URLField()
 
     def __str__(self):
         return str(self.name)
 
     class Meta:
-        verbose_name_plural = "Companies"
+        verbose_name_plural = "Social Accounts"
+
+
+class Skill(models.Model):
+    users = models.ManyToManyField(User, related_name='skills')
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return '%s' % self.name
 
 
 class Location(models.Model):
-    state = models.CharField(max_length=20, verbose_name="State")
-    country = CountryField(blank_label='(select country)')
+    street  = models.CharField(max_length=100)
+    city = models.CharField(max_length=20)
+    state = models.CharField(max_length=40)
+    country = models.CharField(max_length=40)
+    pin = models.IntegerField()
+    def __str__(self):
+        return '%s' % self.street + " "+ self.city
+
+
+class UserLocation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)   
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.state + "," + self.country)
+        return '%s' % self.user.name + ' '+ self.location.city 
+
+    class Meta:
+        ordering = ["user"]        
 
 
-class Alum(models.Model):
-    user = models.OneToOneField(User, related_name='alum', verbose_name="Alumni", on_delete=models.CASCADE,
-                                primary_key=True)
-    alumni_card = models.BooleanField(default="false", verbose_name="Alumni Card")
-    universities = models.ManyToManyField(University, through='UnivAlum', related_name='alums')
-    companies = models.ManyToManyField(Company, through='CompAlum', related_name='alums')
-    locations = models.ManyToManyField(Location, related_name='alums')
+class Organisation(models.Model):
+    TYPES = (
+        ('UN', 'University'),
+        ('CG', 'Campus Group'),
+        ('C', 'Company'),
+    )
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    org_type = models.CharField(max_length=10, choices=TYPES, verbose_name="Organisation Type")  
+    name  = models.CharField(max_length=50)
+    logo = models.ImageField(upload_to='logos', blank=True, null=True)
+    url = models.URLField(blank=True, null=True)
 
     def __str__(self):
-        return '%s' % self.user.name
+        return '%s' % self.name
+
+
+class Experience(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='experiences')
+    org = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name='experiences')
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)  
+    description = models.TextField()
+
+    def __str__(self):
+        return '%s' % self.user.name + ' '+ self.org.name
 
     class Meta:
         ordering = ["user"]
 
-
-class Student(models.Model):
-    user = models.OneToOneField(User, related_name='student', verbose_name="Student", on_delete=models.CASCADE,
-                                primary_key=True)
-
-    def __str__(self):
-        return '%s' % self.user.name
-
-    class Meta:
-        ordering = ["user"]
-
-
-class UnivAlum(models.Model):
-    user = models.ForeignKey(Alum, on_delete=models.CASCADE)
-    univ = models.ForeignKey(University, on_delete=models.CASCADE)
-    date_joined = models.DateField()
-    date_left = models.DateField()
-
-
-class CompAlum(models.Model):
-    user = models.ForeignKey(Alum, on_delete=models.CASCADE)
-    comp = models.ForeignKey(Company, on_delete=models.CASCADE)
-    date_joined = models.DateField()
-    date_left = models.DateField()

@@ -2,8 +2,9 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 
-from core.models import TempUser, User, Alum
+from core.models import  User
 
+"""
 class RegisterValidationSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -16,7 +17,7 @@ class RegisterValidationSerializer(serializers.ModelSerializer):
             'degree_photo': {'write_only': True}
         }
 
-
+"""
 class LoginSerializer(serializers.Serializer):
     enr = serializers.IntegerField(label="Enrollment Number")
     password = serializers.CharField(label="Password")

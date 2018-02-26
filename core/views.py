@@ -9,8 +9,10 @@ from rest_framework.permissions import IsAdminUser
 
 from core.serializers import *
 
-class Register(APIView):
 
+class Register(APIView):
+    pass
+    """
     serializer_class = RegisterValidationSerializer
 
     def post(self, request):
@@ -18,7 +20,7 @@ class Register(APIView):
         serializer.is_valid(raise_exception=True)
         tempuser = serializer.save()
         return Response(request.data, status=status.HTTP_202_ACCEPTED)
-
+    """
 
 
 class Login(APIView):
