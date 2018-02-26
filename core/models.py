@@ -179,7 +179,6 @@ class Skill(models.Model):
 
 
 class Location(models.Model):
-    street  = models.CharField(max_length=100)
     city = models.CharField(max_length=20)
     state = models.CharField(max_length=40)
     country = models.CharField(max_length=40)
