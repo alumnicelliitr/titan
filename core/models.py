@@ -75,7 +75,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     joining_date = models.DateTimeField(null=True, blank=True, verbose_name='Date Of Joining')
     leaving_date = models.DateTimeField(null=True, blank=True, verbose_name='Date Of Leaving')
     branch = models.CharField(max_length=3, choices=BRANCHES, verbose_name="Branch")
-    course = models.CharField(max_length=5, choices=COURSES, verbose_name="Course")
+    course = models.CharField(max_length=7, choices=COURSES, verbose_name="Course")
     hostel = models.CharField(max_length=3, choices=HOSTELS, verbose_name="Hostel", null=True, blank=True)
     room_no = models.CharField(max_length=6, null=True, blank=True)
     gender = models.CharField(null=True, blank=True, max_length=1, choices=(('F', 'Female'), ('M', 'Male')), verbose_name="gender")
@@ -89,7 +89,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text='Designates whether the user can log into admin site.',
     )
 
-    REQUIRED_FIELDS = ['name', 'email', 'batch', 'branch', 'course']
+    REQUIRED_FIELDS = ['name', 'email', 'branch', 'course']
 
     USERNAME_FIELD = 'enr_no'
 
@@ -98,8 +98,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.name
 
+    def get_username(self):
+        return str(self.enr_no)    
+
     def __str__(self):
-        return str(self.enr_no)
+        return self.enr_no
 
 
 class Alumni(models.Model):
