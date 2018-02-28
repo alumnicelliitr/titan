@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 
-from core.models import  User
+from core.models import *
 
 """
 class RegisterValidationSerializer(serializers.ModelSerializer):
@@ -34,6 +34,96 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ('name', 'email', 'enr_no', 'image', 'dob', 'batch', 'branch', 'interest', 'campus_groups', 'password')
+        fields = ('name', 'email', 'enr_no', 'course', 'branch', 'password')
+
+    def create(self, validated_data, instance=None):
+        user = super(UserSerializer, self).create(validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user    
+
+
+class AlumniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Alumni
+        fields = '__all__'
+        read_only_fields = ('id', 'user',)
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = '__all__'
+        read_only_fields = ('id', 'user',)  
+
+
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = '__all__'
+        read_only_fields = ('id', 'user',)  
+
+
+class SocialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Social
+        fields = '__all__'
+        read_only_fields = ('id', 'user',)   
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Location
+        fields = '__all__'
+        read_only_fields = ('id',) 
+
+
+class UserLocationSerializer(serializers.ModelSerializer):
+    location = LocationSerializer()
+    class Meta:
+        model = UserLocation
+        fields = '__all__'
+        read_only_fields = ('id', 'user',)      
+
+
+class OrganisationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organisation
+        fields = '__all__'
+        read_only_fields = ('id',)
+
+
+class ExperienceSerializer(serializers.ModelSerializer):
+    org = OrganisationSerializer()
+    class Meta:
+        model = Experience
+        fields = '__all__'
+        read_only_fields = ('id', 'user',) 
+
+
+class SkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = '__all__'
+        read_only_fields = ('id','user')                     
+
+
+class GetUserSerializer(serializers.ModelSerializer):
+    alum = AlumniSerializer()
+    team = TeamSerializer()
+    contacts = ContactSerializer(many=True)
+    socials = SocialSerializer(many=True)
+    locations = UserLocationSerializer(many=True)
+    experiences = ExperienceSerializer(many=True)
+    skills = SkillSerializer(many=True)
+    class Meta:
+        model = User
+        fields = ('name', 'email', 'email_1', 'enr_no', 'course', 'branch',
+            'password', 'image', 'leaving_date', 'joining_date', 'dob',
+            'hostel', 'room_no', 'gender', 'aadhar_no', 'is_alumni',
+            'alum','team', 'contacts', 'socials', 'locations', 'experiences',
+            'skills' )

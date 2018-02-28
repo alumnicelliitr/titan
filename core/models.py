@@ -111,7 +111,7 @@ class Alumni(models.Model):
     alumni_card = models.BooleanField(default="false", verbose_name="Alumni Card")
     is_verified = models.BooleanField(default=False)
     sign = models.ImageField(upload_to='alum_sign', blank=True, null=True, verbose_name='Signature')
-    short_bio = models.CharField(max_length=200)
+    short_bio = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return '%s' % self.user.name
@@ -129,7 +129,7 @@ class Team(models.Model):
                                 primary_key=True)
     member_type = models.CharField(max_length=10, choices=TYPES, verbose_name="Member Type")
     role = models.CharField(max_length=20)
-    short_bio = models.TextField()
+    short_bio = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return '%s' % self.user.name
@@ -144,7 +144,7 @@ class Contact(models.Model):
         ('Email', 'Email'),
     )
     contact_type = models.CharField(max_length=10, choices=TYPES, verbose_name="Contact Type")
-    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name="User",related_name='contacts', on_delete=models.CASCADE)
     value = models.TextField()
     def __str__(self):
         return str(self.contact_type)
@@ -163,7 +163,7 @@ class Social(models.Model):
         ('GH', 'Github'),
     )
     social_type = models.CharField(max_length=10, choices=TYPES, verbose_name="Contact Type")
-    user = models.ForeignKey(User, verbose_name="User", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name="User",related_name='socials', on_delete=models.CASCADE)
     value = models.URLField()
 
     def __str__(self):
@@ -174,7 +174,7 @@ class Social(models.Model):
 
 
 class Skill(models.Model):
-    users = models.ManyToManyField(User, related_name='skills')
+    users = models.ManyToManyField(User, related_name='skills', blank=True)
     name = models.CharField(max_length=20)
 
     def __str__(self):
@@ -187,11 +187,11 @@ class Location(models.Model):
     country = models.CharField(max_length=40)
     pin = models.IntegerField()
     def __str__(self):
-        return '%s' % self.street + " "+ self.city
+        return '%s' % self.city
 
 
 class UserLocation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)   
+    user = models.ForeignKey(User,related_name='locations', on_delete=models.CASCADE)   
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)

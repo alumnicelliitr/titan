@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth import login, logout
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
@@ -53,14 +53,16 @@ class Logout(APIView):
 
 
 class RegisterUser(APIView):
-
-    permissions_class = [IsAdminUser]
     serializer_class = UserSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        user.set_password(request.data["password"])
-        user.save()
-        return Response(request.data, status=status.HTTP_202_ACCEPTED)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer._errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = GetUserSerializer      
