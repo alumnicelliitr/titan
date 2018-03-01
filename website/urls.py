@@ -21,10 +21,15 @@ urlpatterns = [
 
     # Headlines
     url(r'^headlines/$', HeadlinesListView.as_view(), name='headlines'),
+    # url(r'^headlines/trending$', HeadlinesTrendingListView.as_view(), name='headlines'),
     url(r'^headline/(?P<pk>[0-9]+)/$', HeadlinesDetailView.as_view(), name='headlines-detail'),
 
     # Share Your Story
-    url(r'^shareYourStory/$', ShareYourStoryView.as_view(), name='know-your-stories'),
+    url(r'^shareYourStory/$', ShareYourStoryView.as_view(), name='share-your-stories'),
     # Alumni can register for Share You Story
     url(r'^shareYourStory/create$', ShareYourStoryCreateView.as_view(), name='share-your-stories-create'),
+    # Nodes API for Header
+    url(r'^nodes/$', NodeViews.as_view(), name='send-nodes'),
+    # Alumni Card Register API
+    url(r'^alumni_card/register$', AlumniCardRegisterView.as_view(), name='alumni-card-register'),
 ]

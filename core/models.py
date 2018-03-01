@@ -104,6 +104,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.enr_no
 
+    def __unicode__(self):
+        return str(self.enr_no)
+
 
 class Alumni(models.Model):
     user = models.OneToOneField(User, related_name='alum', verbose_name="Alumni", on_delete=models.CASCADE,

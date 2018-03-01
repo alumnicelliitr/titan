@@ -25,7 +25,9 @@ urlpatterns = [
     url(r'^oauth/', include('social_django.urls', namespace='social')),
     url(r'^newsletter/', include('newsletter.urls')),
     # url(r'^api/crowdfunding/', include('crowdfunding.urls', namespace='Crowdfunding')),
-    url(r'^api/website/', include('website.urls', namespace='Website'))
+    url(r'^api/website/', include('website.urls', namespace='Website')),
+    url(r'^docs/', include('rest_framework_docs.urls')),
+
 ]
 
 if settings.DEBUG:

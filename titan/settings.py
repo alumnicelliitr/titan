@@ -8,7 +8,7 @@ SECRET_KEY = 'r3=(m(3##7b8#em63yi16*jd@ra$ujt(auc0j(uks9@!i)4oys'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['institute-alumni-relation-cell.herokuapp.com', 'localhost']
 
 AUTH_USER_MODEL = "core.User"
 
@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'sorl.thumbnail',
     'newsletter',
+    'rest_framework_docs',
 ]
 
 MIDDLEWARE = [
@@ -40,6 +41,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'titan.urls'
@@ -108,8 +110,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

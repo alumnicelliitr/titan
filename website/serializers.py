@@ -41,7 +41,7 @@ class ImageSerializer(serializers.ModelSerializer):
 class UpcomingEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('id', 'title', 'date', 'venue')
+        fields = ('id', 'title', 'start_date', 'venue')
 
 
 class PastEventSerializer(serializers.ModelSerializer):
@@ -49,7 +49,7 @@ class PastEventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('id', 'title', 'date', 'venue', 'coverImage')
+        fields = ('id', 'title', 'end_date', 'venue', 'coverImage')
 
 
 class EventDetailSerializer(serializers.ModelSerializer):
@@ -57,7 +57,7 @@ class EventDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('id', 'title', 'content', 'images', 'date', 'venue', 'link')
+        fields = ('id', 'title', 'content', 'images','start_date', 'end_date', 'venue', 'link')
 
 
 class MoUSerializer(serializers.ModelSerializer):
@@ -118,9 +118,17 @@ class ShareYourStorySerializer(serializers.ModelSerializer):
 
 
 class NodeSerializer(serializers.ModelSerializer):
-    children = serializers.SerializerMethodField()
+    # children = serializers.SerializerMethodField()
 
     class Meta:
         model = Node
-        fields = ('url_name', 'title', 'parent', 'visibility', 'external_url', 'level', 'content')
+        fields = '__all__'
 
+class AlumniCardSerializer(serializers.ModelSerializer):
+    photo = serializers.ImageField(max_length=None, use_url=True)
+    photo_sign = serializers.ImageField(max_length=None, use_url=True)
+    photo_degree = serializers.ImageField(max_length=None, use_url=True)
+
+    class Meta:
+        model = AlumniCard
+        fields = '__all__'

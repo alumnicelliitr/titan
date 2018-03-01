@@ -7,6 +7,7 @@ from django_countries.fields import CountryField
 from core.models import User
 import os
 
+# TODO: Make a model for Awards
 
 class NewsLetter(models.Model):
     """
@@ -23,14 +24,23 @@ class NewsLetter(models.Model):
 
 
 class Event(models.Model):
+    MEET_CHOICES = (
+        ("Golden", "Golden Jublee"),
+        ("Silver", "Silver Jublee"),
+        ("Ruby", "Ruby Jublee"),
+        ("Meet", "Alumni meet")
+    )
     """
     List of upcoming and complete events with image gallery
     """
     title = models.CharField(max_length=100)
+    type = models.CharField(max_length=20, default="Alumni Meet", verbose_name="Alumni Meet type")
+    tag = models.CharField(max_length=20, default=None, choices=MEET_CHOICES)
     content = models.TextField('Event Details')
     link = models.URLField(verbose_name='External links')
     venue = models.CharField(max_length=100, default=None, blank=True)
-    date = models.DateTimeField(verbose_name='Event Date', default=None)
+    start_date = models.DateTimeField(verbose_name='Event start Date', default=None)
+    end_date = models.DateTimeField(verbose_name='Event end Date', default=None)
     coverImage = models.ImageField(verbose_name='Cover Image of Event', upload_to='img/events', default=None)
 
     def __str__(self):
@@ -103,14 +113,17 @@ class Course(models.Model):
         return self.course
 
 
+# two apis for mainpage true
 class Headline(models.Model):
     """
     weekly Headlines of happenings in IITR.
     """
     title = models.CharField(max_length=100)
+    tagLine = models.CharField(max_length=100, blank=True)
     content = models.TextField(default=None)
     image = models.ImageField(upload_to='img/headlines', default='None')
     link = models.URLField(default=None, blank=True)
+    mainPage = models.URLField(default=False)
 
     def __str__(self):
         return self.title
@@ -136,7 +149,8 @@ class VideoRepository(models.Model):
     """
     The Video Repository Initiative it can contain one or more videos
     """
-    image = models.ImageField(upload_to=initiative_image_directory_path, default=None)
+    title = models.CharField(max_length=100, verbose_name='Title of the Video repository')
+    link = models.URLField(default=None, blank=True, verbose_name='Youtube playlist link')
 
     def __str__(self):
         return "%s the initiative title" % self.initiative.title
@@ -145,6 +159,7 @@ class VideoRepository(models.Model):
 class Video(models.Model):
     title = models.CharField(max_length=50, verbose_name='Video Title')
     mainPage = models.BooleanField(default=False)
+    link = models.URLField(default=None, )
     VideoRepository = models.ForeignKey(VideoRepository, related_name='videos', on_delete=models.CASCADE)
     description = models.CharField(max_length=50, verbose_name='Video Description', blank=True)
 
@@ -154,12 +169,14 @@ class Video(models.Model):
 
 class KnowYourAlumni(models.Model):
     user = models.ForeignKey(User, related_name='abouts', on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, default=None)
     link = models.URLField(default=None, blank=True, verbose_name='External Link')
     description = models.TextField(default=None)
+    thumbnail = models.ImageField(verbose_name='Thumbnail', upload_to='', default=None) # TODO: make a dynamic folder
 
 
 class ShareYourStory(models.Model):
-    # user = models.ForeignKey(User, related_name='', on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, related_name='', on_delete=models.CASCADE, blank=True)
     title = models.CharField(max_length=100, default=None, verbose_name='Story Title')
     description = models.TextField(default=None)
     link = models.URLField(default=None, verbose_name='Article Link')
@@ -177,17 +194,26 @@ class Node(models.Model):
     def __str__(self):
         return self.title + " @ " + str(self.level)
 
+    def get_all_children(self, include_self=True):
+        r = []
+        if include_self:
+            r.append(self)
+        for c in Node.objects.filter(parent=self):
+            _r = c.get_all_children(include_self=True)
+            if 0 < len(_r):
+                r.extend(_r)
+        return r
+
     class Meta:
         app_label = 'website'
 
 
 def get_file_path(instance, filename):
     name, ext = os.path.splitext(filename)
-    return '{0}/{1}'.format("img/alumnicard", str(instance.title) + str(ext))
+    return '{0}/{1}'.format("img/alumnicard", str(instance.first_name) + str(ext))
 
 
 class AlumniCard(models.Model):
-
     ADDRESS_CHOICES = (
         ("Office Address", "Office Address"),
         ("Residence Address", "Residence Address")
@@ -217,3 +243,5 @@ class AlumniCard(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.middle_name + " " + self.last_name
+
+    ## add Mail in the front end
