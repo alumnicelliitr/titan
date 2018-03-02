@@ -102,7 +102,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return str(self.enr_no)    
 
     def __str__(self):
-        return self.enr_no
+        return str(self.enr_no)
 
     def __unicode__(self):
         return str(self.enr_no)
