@@ -124,6 +124,6 @@ class GetUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('name', 'email', 'email_1', 'enr_no', 'course', 'branch',
             'password', 'image', 'leaving_date', 'joining_date', 'dob',
-            'hostel', 'room_no', 'gender', 'aadhar_no', 'is_alumni',
+            'hostel', 'room_no', 'gender', 'aadhar_no',
             'alum','team', 'contacts', 'socials', 'locations', 'experiences',
             'skills' )
