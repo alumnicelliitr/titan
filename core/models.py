@@ -81,7 +81,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     gender = models.CharField(null=True, blank=True, max_length=1, choices=(('F', 'Female'), ('M', 'Male')), verbose_name="gender")
     degree = models.FileField(upload_to='degrees', blank=True, null=True)
     aadhar_no = models.BigIntegerField(blank=True, null=True)
-    is_alumni = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     is_staff = models.BooleanField(
         verbose_name='Staff Status',
