@@ -123,7 +123,7 @@ class Headline(models.Model):
     content = models.TextField(default=None)
     image = models.ImageField(upload_to='img/headlines', default='None')
     link = models.URLField(default=None, blank=True)
-    mainPage = models.URLField(default=False)
+    mainPage = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
