@@ -168,6 +168,9 @@ class Video(models.Model):
 
 
 class KnowYourAlumni(models.Model):
+    """
+    Link in an external link such as medium blog.
+    """
     user = models.ForeignKey(User, default=None, related_name='knowYourAlum', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, default=None)
     link = models.URLField(default=None, blank=True, verbose_name='External Link')
@@ -245,3 +248,10 @@ class AlumniCard(models.Model):
         return self.first_name + " " + self.middle_name + " " + self.last_name
 
     ## add Mail in the front end
+
+# Award Model to be checked
+
+# donation model
+class Donation(models.Model):
+    title = models.CharField(max_length=500, default=None, blank=False)
+    link = models.URLField(default=None, blank=False, verbose_name='External Link')
