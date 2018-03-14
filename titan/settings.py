@@ -8,7 +8,9 @@ SECRET_KEY = 'r3=(m(3##7b8#em63yi16*jd@ra$ujt(auc0j(uks9@!i)4oys'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['institute-alumni-relation-cell.herokuapp.com', 'localhost']
+CORS_ORIGIN_ALLOW_ALL = True 
+
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = "core.User"
 
@@ -25,6 +27,7 @@ INSTALLED_APPS = [
     'website.apps.WebsiteConfig',
     'django_countries',
     'social_django',
+    'corsheaders',
     'rest_framework',
     'django_extensions',
     'sorl.thumbnail',
@@ -35,6 +38,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
