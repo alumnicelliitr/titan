@@ -168,19 +168,19 @@ class Video(models.Model):
 
 
 class KnowYourAlumni(models.Model):
-    user = models.ForeignKey(User, related_name='abouts', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default=None, related_name='knowYourAlum', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, default=None)
     link = models.URLField(default=None, blank=True, verbose_name='External Link')
     description = models.TextField(default=None)
-    thumbnail = models.ImageField(verbose_name='Thumbnail', upload_to='', default=None) # TODO: make a dynamic folder
+    thumbnail = models.ImageField(verbose_name='Thumbnail', upload_to='img/KnowYourAlum', default=None) # TODO: make a dynamic folder
 
 
 class ShareYourStory(models.Model):
-    # user = models.ForeignKey(User, related_name='', on_delete=models.CASCADE, blank=True)
+    user = models.ForeignKey(User, default=None, related_name='shareYourStory', on_delete=models.CASCADE, blank=True)
     title = models.CharField(max_length=100, default=None, verbose_name='Story Title')
     description = models.TextField(default=None)
     link = models.URLField(default=None, verbose_name='Article Link')
-
+    thumbnail = models.ImageField(verbose_name='Image', upload_to='img/ShareYourStory', default=None) # TODO: make a dynamic folder
 
 class Node(models.Model):
     url_name = models.CharField(max_length=50)  # Would be used for URL
