@@ -24,7 +24,7 @@ class NewsLetter(models.Model):
 
 
 class Event(models.Model):
-    MEET_CHOICES = (
+    EVENT_TYPES = (
         ("Golden", "Golden Jublee"),
         ("Silver", "Silver Jublee"),
         ("Ruby", "Ruby Jublee"),
@@ -34,8 +34,8 @@ class Event(models.Model):
     List of upcoming and complete events with image gallery
     """
     title = models.CharField(max_length=100)
-    type = models.CharField(max_length=20, default="Alumni Meet", verbose_name="Alumni Meet type")
-    tag = models.CharField(max_length=20, default=None, choices=MEET_CHOICES)
+    # type = models.CharField(max_length=20, default="Alumni Meet", verbose_name="Alumni Meet type")
+    type = models.CharField(max_length=20, default=None, choices=EVENT_TYPES)
     content = models.TextField('Event Details')
     link = models.URLField(verbose_name='External links')
     venue = models.CharField(max_length=100, default=None, blank=True)
