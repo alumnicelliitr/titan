@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils import timezone
 
 from website.models import *
 
@@ -132,3 +133,30 @@ class AlumniCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlumniCard
         fields = '__all__'
+
+
+class CustomEventSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        resdata = []
+        # TODO: Remove Hardcoded stuff
+        data1 = data.filter(type='Golden', start_date__gte=timezone.now())
+        data2 = data.filter(type='Golden', end_date__lte=timezone.now())
+        data3 = data.filter(type='Silver', start_date__gte=timezone.now())
+        data4 = data.filter(type='Silver', end_date__lte=timezone.now())
+        # data3 = data.filter(type='Golden')
+        # data4 = data.filter(type='Golden')
+        resdata.append({'Golden': {
+            'upcoming': super(CustomEventSerializer, self).to_representation(data1),
+            'past': super(CustomEventSerializer, self).to_representation(data2)
+            }})
+        resdata.append({'Silver': {
+            'upcoming': super(CustomEventSerializer, self).to_representation(data3),
+            'past': super(CustomEventSerializer, self).to_representation(data4)
+            }})
+        return resdata
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = '__all__'
+        list_serializer_class = CustomEventSerializer

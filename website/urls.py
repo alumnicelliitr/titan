@@ -12,8 +12,7 @@ urlpatterns = [
 
     # events api
     url(r'^event/(?P<pk>[0-9]+)/$', EventDetailView.as_view(), name='event-detail'),
-    url(r'^event/upcoming/$', UpcomingEventsList.as_view(), name='upcoming-events'),
-    url(r'^event/past/$', PastEventsList.as_view(), name='past-events'),
+    url(r'^events/$', EventsList.as_view(), name='events'),
 
     #   MoUs
     url(r'^mou/$', MoUListView.as_view(), name='mous-list'),

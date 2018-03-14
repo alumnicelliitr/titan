@@ -43,11 +43,12 @@ class UpcomingEventsList(generics.ListAPIView):
         return Event.objects.filter(end_date__lt=timezone.now())
 
 
-class PastEventsList(generics.ListAPIView):
-    serializer_class = PastEventSerializer
+class EventsList(generics.ListAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
 
-    def get_queryset(self):
-        return Event.objects.filter(end_date__gte=timezone.now())
+    # def get_queryset(self):
+    #     return Event.objects.filter(end_date__gte=timezone.now())
 
 
 class MoUListView(generics.ListAPIView):
