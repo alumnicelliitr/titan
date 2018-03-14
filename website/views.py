@@ -32,17 +32,6 @@ class EventDetailView(generics.RetrieveAPIView):
 
     serializer_class = EventDetailSerializer
 
-
-class UpcomingEventsList(generics.ListAPIView):
-    serializer_class = UpcomingEventSerializer
-
-    def get_queryset(self):
-        """
-        This View should return all the upcoming events
-        """
-        return Event.objects.filter(end_date__lt=timezone.now())
-
-
 class EventsList(generics.ListAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer

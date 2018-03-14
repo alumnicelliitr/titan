@@ -39,18 +39,18 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ('id', 'pic', 'description')
 
 
-class UpcomingEventSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Event
-        fields = ('id', 'title', 'start_date', 'venue')
+# class UpcomingEventSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Event
+#         fields = ('id', 'title', 'start_date', 'venue')
 
 
-class PastEventSerializer(serializers.ModelSerializer):
-    coverImage = serializers.ImageField(max_length=None, use_url=True)
+# class PastEventSerializer(serializers.ModelSerializer):
+#     coverImage = serializers.ImageField(max_length=None, use_url=True)
 
-    class Meta:
-        model = Event
-        fields = ('id', 'title', 'end_date', 'venue', 'coverImage')
+#     class Meta:
+#         model = Event
+#         fields = ('id', 'title', 'end_date', 'venue', 'coverImage')
 
 
 class EventDetailSerializer(serializers.ModelSerializer):
