@@ -8,7 +8,7 @@ SECRET_KEY = 'r3=(m(3##7b8#em63yi16*jd@ra$ujt(auc0j(uks9@!i)4oys'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['institute-alumni-relation-cell.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = "core.User"
 
