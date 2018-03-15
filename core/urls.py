@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'^unsubscribe/(?P<key>(.*))/$',views.unsubscribe, name='unsubscribe'),
     url(r'^resubscribe/(?P<key>(.*))/$',views.resubscribe, name='resubscribe'),
     url(r'^send/(?P<id>[0-9]+)/$', views.send_mail, name='sendmsg'),
+    url(r'^login/$', views.OAuthRedirectView.as_view(), name = 'oauth')
+    url(r'^team/$', views.MemberList.as_view(), name = 'userdetail')
 ]

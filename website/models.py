@@ -25,8 +25,8 @@ class NewsLetter(models.Model):
 
 class Event(models.Model):
     EVENT_TYPES = (
-        ("Golden", "Golden Jublee"),
-        ("Silver", "Silver Jublee"),
+        ("GL", "Guest Lecture"),
+        ("", ""),
         ("Ruby", "Ruby Jublee"),
         ("Meet", "Alumni meet")
     )
@@ -171,7 +171,7 @@ class KnowYourAlumni(models.Model):
     """
     Link in an external link such as medium blog.
     """
-    user = models.ForeignKey(User, default=None, related_name='knowYourAlum', on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, default=None, related_name='knowYourAlum', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, default=None)
     link = models.URLField(default=None, blank=True, verbose_name='External Link')
     description = models.TextField(default=None)
@@ -179,7 +179,7 @@ class KnowYourAlumni(models.Model):
 
 
 class ShareYourStory(models.Model):
-    user = models.ForeignKey(User, default=None, related_name='shareYourStory', on_delete=models.CASCADE, blank=True)
+    # user = models.ForeignKey(User, default=None, related_name='shareYourStory', on_delete=models.CASCADE, blank=True)
     title = models.CharField(max_length=100, default=None, verbose_name='Story Title')
     description = models.TextField(default=None)
     link = models.URLField(default=None, verbose_name='Article Link')
@@ -217,29 +217,7 @@ def get_file_path(instance, filename):
 
 
 class AlumniCard(models.Model):
-    ADDRESS_CHOICES = (
-        ("Office Address", "Office Address"),
-        ("Residence Address", "Residence Address")
-    )
-
-    DATE_INPUT_FORMATS = ('%d-%m-%Y', '%Y-%m-%d')
-    YEAR_CHOICES = ((x, x) for x in range(1847, 2017))
-    first_name = models.CharField(max_length=255)
-    middle_name = models.CharField(max_length=255, blank=True)
-    last_name = models.CharField(max_length=255)
-    dob = models.DateField()
-    degree_name = models.CharField(max_length=255)
-    degree_branch = models.CharField(max_length=255)
-    degree_year = models.IntegerField(choices=YEAR_CHOICES)
-    present_desig = models.CharField(max_length=255)
-    present_dept = models.CharField(max_length=255)
-    present_office = models.TextField()
-    present_residence = models.TextField()
-    delivery_address = models.TextField()
-    telephone = models.CharField(max_length=20, blank=True)
-    mobile = models.CharField(max_length=20)
-    email = models.EmailField()
-    address_for_correspondence = models.CharField(choices=ADDRESS_CHOICES, max_length=50)
+    user = models.ForeignKey(User, default=None, related_name='alumniCard', on_delete=models.CASCADE)
     photo = models.ImageField(blank=False, upload_to=get_file_path)
     photo_sign = models.ImageField(blank=False, upload_to=get_file_path)
     photo_degree = models.ImageField(blank=False, upload_to=get_file_path)
@@ -250,8 +228,19 @@ class AlumniCard(models.Model):
     ## add Mail in the front end
 
 # Award Model to be checked
+class Award(models.Model):
+    title = models.CharField(max_length=500, default=None)
+    description = models.TextField(default=None)
+    link = models.URLField(verbose_name='Donation Link')
+
+    def __str__(self):
+        return self.title
 
 # donation model
-class Donation(models.Model):
+class DonationScheme(models.Model):
     title = models.CharField(max_length=500, default=None, blank=False)
+    description = models.TextField(default=None)
     link = models.URLField(default=None, blank=False, verbose_name='External Link')
+
+    def __str__(self):
+        return self.title

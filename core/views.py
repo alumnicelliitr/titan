@@ -247,3 +247,6 @@ def send_mail(request,id):
         }
     return render(request, 'core/mailform.html', context) 
 
+class MemberList(generics.ListAPIView):
+    queryset = Team.objects.all()
+    serializer_class = MemberSerializer

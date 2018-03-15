@@ -11,12 +11,6 @@ from rest_framework.permissions import (
 
 from website.serializers import *
 
-
-class MemberList(generics.ListAPIView):
-    queryset = Member.objects.all()
-    serializer_class = MemberSerializer
-
-
 class NewsLetterList(generics.ListAPIView):
     queryset = NewsLetter.objects.all()
     serializer_class = NewsLetterSerializer
@@ -29,7 +23,6 @@ class NewsLetterDetailView(generics.RetrieveAPIView):
 
 class EventDetailView(generics.RetrieveAPIView):
     queryset = Event.objects.all()
-
     serializer_class = EventDetailSerializer
 
 class EventsList(generics.ListAPIView):
@@ -68,7 +61,16 @@ class ShareYourStoryView(generics.ListAPIView):
 class ShareYourStoryCreateView(generics.CreateAPIView):
     queryset = ShareYourStory.objects.all()
     serializer_class = ShareYourStoryCreateSerializer
-    # permission_classes = [IsAuthenticated]
+
+
+class KnowYourAlumniView(generics.ListAPIView):
+    queryset = KnowYourAlumni.objects.all()
+    serializer_class = KnowYourAlumniSerializer
+
+
+class KnowYourAlumniCreateView(generics.CreateAPIView):
+    queryset = KnowYourAlumni.objects.all()
+    serializer_class = KnowYourAlumniCreateSerializer
 
 
 # class HeadlinesTrendingListView(generics.ListAPIView):
@@ -106,6 +108,14 @@ class NodeViews(APIView):
 class AlumniCardRegisterView(generics.CreateAPIView):
     queryset = AlumniCard.objects.all()
     serializer_class = AlumniCardSerializer
+
+class AwardsListView(generics.ListAPIView):
+    queryset = Award.objects.all()
+    serializer_class = AwardSerializer
+
+class DonationSchemeListView(generics.ListAPIView):
+    queryset = DonationScheme.objects.all()
+    serializer_class = DonationSchemeSerializer
 
 
 def load_nodes(level, parent=None):
@@ -155,3 +165,4 @@ def level(request, level0, level1=None, level2=None):
         'base': base,
     }
     return render(request, 'website/page.html', context)
+

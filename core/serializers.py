@@ -123,7 +123,25 @@ class GetUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('name', 'email', 'email_1', 'enr_no', 'course', 'branch',
-            'password', 'image', 'leaving_date', 'joining_date', 'dob',
+            'image', 'leaving_date', 'joining_date', 'dob',
             'hostel', 'room_no', 'gender', 'aadhar_no',
             'alum','team', 'contacts', 'socials', 'locations', 'experiences',
             'skills' )
+
+class CustomEventSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        resdata = []
+        data1 = data.filter(member_type='F')
+        data2 = data.filter(member_type='P')
+        data3 = data.filter(member_type='C')
+        resdata.append({'Founding': super(CustomEventSerializer, self).to_representation(data1)})
+        resdata.append({'Passed': super(CustomEventSerializer, self).to_representation(data2)})
+        resdata.append({'Current': super(CustomEventSerializer, self).to_representation(data3)})
+        return resdata
+
+class MemberSerializer(serializers.ModelSerializer):
+    user = GetUserSerializer(many=False)
+    class Meta:
+        model = Team
+        fields = '__all__'
+        list_serializer_class = CustomEventSerializer

@@ -4,17 +4,6 @@ from django.utils import timezone
 from website.models import *
 
 
-class TeamSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Team
-
-
-class MemberSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Member
-        fields = ('id', 'name', 'role', 'contact_no', 'link', 'team')
-
-
 class NewsLetterSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(max_length=None, use_url=True)
 
@@ -109,13 +98,26 @@ class HeadlinesDetailSerializer(serializers.ModelSerializer):
 class ShareYourStoryCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShareYourStory
-        fields = ('title', 'description', 'link')
+        fields = '__all__'
 
 
 class ShareYourStorySerializer(serializers.ModelSerializer):
+    # user = serializers.RelatedField(source='user', read_only=True)
     class Meta:
         model = ShareYourStory
-        fields = ('id', 'title', 'description', 'link')
+        fields = '__all__'
+
+class KnowYourAlumniCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = KnowYourAlumni
+        fields = ('title', 'description', 'link')
+
+
+class KnowYourAlumniSerializer(serializers.ModelSerializer):
+    user = serializers.RelatedField(source='user', read_only=True)
+    class Meta:
+        model = KnowYourAlumni
+        fields = ('user', 'title', 'description', 'link')
 
 
 class NodeSerializer(serializers.ModelSerializer):
@@ -160,3 +162,14 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = '__all__'
         list_serializer_class = CustomEventSerializer
+
+
+class AwardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Award
+        fields = '__all__'
+
+class DonationSchemeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DonationScheme
+        fields = '__all__'

@@ -131,6 +131,7 @@ class Team(models.Model):
     TYPES = (
         ('C', 'Current'),
         ('P', 'Passed'),
+        ('F', 'Founding'),
     )
     user = models.OneToOneField(User, related_name='team', verbose_name="Team member", on_delete=models.CASCADE,
                                 primary_key=True)
