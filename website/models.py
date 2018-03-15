@@ -26,9 +26,8 @@ class NewsLetter(models.Model):
 class Event(models.Model):
     EVENT_TYPES = (
         ("GL", "Guest Lecture"),
-        ("", ""),
-        ("Ruby", "Ruby Jublee"),
-        ("Meet", "Alumni meet")
+        ("RU", "Re-Union"),
+        ("AM", "Alumni meet")
     )
     """
     List of upcoming and complete events with image gallery

@@ -141,19 +141,25 @@ class CustomEventSerializer(serializers.ListSerializer):
     def to_representation(self, data):
         resdata = []
         # TODO: Remove Hardcoded stuff
-        data1 = data.filter(type='Golden', start_date__gte=timezone.now())
-        data2 = data.filter(type='Golden', end_date__lte=timezone.now())
-        data3 = data.filter(type='Silver', start_date__gte=timezone.now())
-        data4 = data.filter(type='Silver', end_date__lte=timezone.now())
+        data1 = data.filter(type='AM', start_date__gte=timezone.now())
+        data2 = data.filter(type='AM', end_date__lte=timezone.now())
+        data3 = data.filter(type='GL', start_date__gte=timezone.now())
+        data4 = data.filter(type='GL', end_date__lte=timezone.now())
+        data5 = data.filter(type='RU', start_date__gte=timezone.now())
+        data6 = data.filter(type='RU', end_date__lte=timezone.now())
         # data3 = data.filter(type='Golden')
         # data4 = data.filter(type='Golden')
-        resdata.append({'Golden': {
+        resdata.append({'Alumni Meet': {
             'upcoming': super(CustomEventSerializer, self).to_representation(data1),
             'past': super(CustomEventSerializer, self).to_representation(data2)
             }})
-        resdata.append({'Silver': {
+        resdata.append({'Guest Lecture': {
             'upcoming': super(CustomEventSerializer, self).to_representation(data3),
             'past': super(CustomEventSerializer, self).to_representation(data4)
+            }})
+        resdata.append({'Re Union': {
+            'upcoming': super(CustomEventSerializer, self).to_representation(data5),
+            'past': super(CustomEventSerializer, self).to_representation(data6)
             }})
         return resdata
 
