@@ -110,7 +110,7 @@ class ShareYourStorySerializer(serializers.ModelSerializer):
 class KnowYourAlumniCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = KnowYourAlumni
-        fields = ('title', 'description', 'link')
+        fields = ('title', 'description', 'link', 'thumbnail')
 
 
 class KnowYourAlumniSerializer(serializers.ModelSerializer):

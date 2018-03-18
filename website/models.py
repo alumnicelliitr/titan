@@ -170,7 +170,7 @@ class KnowYourAlumni(models.Model):
     """
     Link in an external link such as medium blog.
     """
-    # user = models.ForeignKey(User, default=None, related_name='knowYourAlum', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default=None, related_name='knowYourAlum', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, default=None)
     link = models.URLField(default=None, blank=True, verbose_name='External Link')
     description = models.TextField(default=None)
@@ -217,6 +217,7 @@ def get_file_path(instance, filename):
 
 class AlumniCard(models.Model):
     user = models.ForeignKey(User, default=None, related_name='alumniCard', on_delete=models.CASCADE)
+    delivered = models.BooleanField(default=False)
     photo = models.ImageField(blank=False, upload_to=get_file_path)
     photo_sign = models.ImageField(blank=False, upload_to=get_file_path)
     photo_degree = models.ImageField(blank=False, upload_to=get_file_path)
