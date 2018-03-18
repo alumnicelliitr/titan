@@ -248,6 +248,14 @@ class Subscriber(models.Model):
     subscription_key = models.CharField(max_length=32,unique=True, blank=True)
 
 
+
+from django.core.validators import validate_email
+class Visitor(models.Model):
+    email = models.EmailField(unique=True,validators=[validate_email])
+    is_subscribed = models.BooleanField(default=True)
+    subscription_key = models.CharField(max_length=32,unique=True, blank=True)
+
+
 @receiver(post_save, sender=User)
 def create_user_subscriber(sender, instance, created, **kwargs):
     if created:
@@ -263,6 +271,13 @@ def create_subscriber(sender, instance, **kwargs):
     if instance._state.adding :
       key = uuid.uuid1().hex
       instance.subscription_key = key    
+
+@receiver(pre_save, sender=Visitor)
+def create_visitor(sender, instance, **kwargs):
+    if instance._state.adding :
+      key = uuid.uuid1().hex
+      instance.subscription_key = key    
+
 
 
 class EmailMessage(models.Model):

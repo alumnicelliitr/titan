@@ -84,6 +84,9 @@ class SubscriberAdmin(admin.ModelAdmin):
     list_display = ('user','is_subscribed')
     list_filter = ('is_subscribed',)
 
+class VisitorAdmin(admin.ModelAdmin):
+    list_display = ('email','is_subscribed')
+    list_filter = ('is_subscribed',)
 
 
 class EmailMessageAdmin(admin.ModelAdmin):
@@ -96,7 +99,6 @@ class EmailMessageAdmin(admin.ModelAdmin):
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(EmailMessage, EmailMessageAdmin)
 admin.site.register(Subscriber, SubscriberAdmin)
-
-
+admin.site.register(Visitor, VisitorAdmin)
 
 

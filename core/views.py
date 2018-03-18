@@ -154,12 +154,18 @@ def unsubscribe(request,key):
     message = ''
     try:
         subscriber = Subscriber.objects.get(subscription_key=key)
-        subscriber.is_subscribed = False
+        if subscriber:
+            subscriber.is_subscribed = False
+            visitor = Visitor.objects.get(email=subscriber.user.email_1)
+            if visitor:
+                visitor.is_subscribed=False
+                visitor.save()
         mail_subject = 'Unsubscribe to AlumniIITR'
         current_site = get_current_site(request)
         text = render_to_string('core/unsubscribe.html', {
                 'domain':current_site.domain,
                 'sub': subscriber,
+                'is_visitor': False,
             })
         to_email = subscriber.user.email_1
         if to_email:
@@ -176,17 +182,48 @@ def unsubscribe(request,key):
         message = 'Invalid Subscription key'
     return render(request, 'core/sub-unsub.html', {'message':message, }) 
 
+
+
+def unsubscribe_visitor(request,key):
+    message = ''
+    try:
+        subscriber = Visitor.objects.get(subscription_key=key)
+        subscriber.is_subscribed = False
+        mail_subject = 'Unsubscribe to AlumniIITR'
+        current_site = get_current_site(request)
+        text = render_to_string('core/unsubscribe.html', {
+                'domain':current_site.domain,
+                'sub': subscriber,
+                'is_visitor':True,
+            })
+        to_email = subscriber.email
+        if to_email:
+            my_username = settings.EMAIL_HOST_USER
+            connection = get_connection() # uses SMTP server specified in settings.py
+            connection.open()
+            email = EmailMultiAlternatives(mail_subject, text, my_username, to=[to_email])
+            email.content_subtype = 'html'
+            email.send()
+            connection.close() 
+        subscriber.save()
+        message = 'Unsubscribed successfully'
+    except:
+        message = 'Invalid Subscription key'
+    return render(request, 'core/sub-unsub.html', {'message':message, }) 
+
+
+
 def resubscribe(request,key):
     message = ''
     try:
         subscriber = Subscriber.objects.get(subscription_key=key)
         subscriber.is_subscribed = True
-        subscriber.save()
         mail_subject = 'Resubscribe to AlumniIITR'
         current_site = get_current_site(request)
         text = render_to_string('core/resubscribe.html', {
                 'domain':current_site.domain,
                 'sub': subscriber,
+                'is_visitor': False,
             })
         to_email = subscriber.user.email_1
         if to_email:
@@ -205,9 +242,39 @@ def resubscribe(request,key):
     return render(request, 'core/sub-unsub.html', {'message':message, })  
 
 
+def resubscribe_visitor(request,key):
+    message = ''
+    try:
+        subscriber = Visitor.objects.get(subscription_key=key)
+        subscriber.is_subscribed = True
+        mail_subject = 'Resubscribe to AlumniIITR'
+        current_site = get_current_site(request)
+        text = render_to_string('core/resubscribe.html', {
+                'domain':current_site.domain,
+                'sub': subscriber,
+                'is_visitor': True
+            })
+        to_email = subscriber.email
+        if to_email:
+            my_username = settings.EMAIL_HOST_USER
+            connection = get_connection() # uses SMTP server specified in settings.py
+            connection.open()
+            email = EmailMultiAlternatives(mail_subject, text, my_username, to=[to_email])
+            print('done done')
+            email.content_subtype = 'html'
+            email.send()
+            connection.close() 
+        subscriber.save()
+        message = 'Subscribed successfully'
+    except:
+        message = 'Invalid Subscription key'
+    return render(request, 'core/sub-unsub.html', {'message':message, })      
+
+
 def send_mail(request,id):
     message = get_object_or_404(EmailMessage, pk=id)
     subscribers = Subscriber.objects.filter(is_subscribed=True)
+    visitors = Visitor.objects.filter(is_subscribed=True)
     mail_subject = message.subject
     current_site = get_current_site(request)
     form = UserForm()
@@ -223,12 +290,14 @@ def send_mail(request,id):
                             fail_silently=False)
         connection.open()
         emails = []
+        receivers = []
 
         for sub in subscribers:
             text = render_to_string('core/msg.html', {
                 'domain':current_site.domain,
                 'sub': sub,
                 'msg': message,
+                'is_visitor': False
             })
             to_email = sub.user.email_1
             #email = EmailMsg(mail_subject, text, to=[to_email], connection=connection)
@@ -237,7 +306,26 @@ def send_mail(request,id):
                 #email.attach_alternative(text_content, "text/html")
                 email.content_subtype = 'html'
                 emails.append(email)
+                receivers.append(to_email)
                 #email.send()
+        for visitor in visitors:
+            if visitor.email not in receivers:
+                text = render_to_string('core/msg.html', {
+                'domain':current_site.domain,
+                'sub': visitor,
+                'msg': message,
+                'is_visitor': True
+                })
+                to_email = visitor.email
+                print(text)
+                #email = EmailMsg(mail_subject, text, to=[to_email], connection=connection)
+                if to_email:
+                    email = EmailMultiAlternatives(mail_subject, text, my_username, [to_email])
+                    #email.attach_alternative(text_content, "text/html")
+                    email.content_subtype = 'html'
+                    emails.append(email)
+                    receivers.append(to_email)
+
         connection.send_messages(emails) 
         connection.close()
         success = True
@@ -250,3 +338,8 @@ def send_mail(request,id):
 class MemberList(generics.ListAPIView):
     queryset = Team.objects.all()
     serializer_class = MemberSerializer
+
+
+class VisitorCreate(generics.CreateAPIView):
+    queryset = Visitor.objects.all()
+    serializer_class = VisitorSerializer

@@ -145,3 +145,10 @@ class MemberSerializer(serializers.ModelSerializer):
         model = Team
         fields = '__all__'
         list_serializer_class = CustomEventSerializer
+
+
+class VisitorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Visitor
+        fields = '__all__'
+        read_only_fields = ('id','is_subscribed', 'subscription_key') 
