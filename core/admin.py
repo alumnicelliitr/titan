@@ -80,8 +80,22 @@ class CustomUserAdmin(admin.ModelAdmin):
     def alum_link(self, alum):
         return alum
 
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ('user','is_subscribed')
+    list_filter = ('is_subscribed',)
+
+
+
+class EmailMessageAdmin(admin.ModelAdmin):
+    list_display = ('subject','created_on','send_url_field' )
+    def send_url_field(self, obj):
+        return '<a href="%s">%s</a>' % (reverse('Core:sendmsg', kwargs={'id':obj.id,}),'Send All',)
+    send_url_field.allow_tags = True
+    send_url_field.short_description = 'Send all'
 
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(EmailMessage, EmailMessageAdmin)
+admin.site.register(Subscriber, SubscriberAdmin)
 
 
 

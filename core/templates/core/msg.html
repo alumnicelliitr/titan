@@ -1,0 +1,12 @@
+{% autoescape off %}
+{% if msg.include_name and sub.user.name %}Dear {{ sub.user.name }}{% endif %}
+<br>
+{{ msg.message }}
+<br><br><br>
+
+<p>   
+This message was sent to {{ sub.user.email_1 }}  {{ sub.user.name }} .<br>
+If you do not want to receive any updates from Alumni Affairs IIT Roorkee, <a href="http://{{ domain }}{% url 'Core:unsubscribe' sub.subscription_key %}">this link </a><br>
+</p>
+
+{% endautoescape %}

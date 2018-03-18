@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'newsletter',
     'rest_framework_docs',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +124,10 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SITE_ID = 1 #Just for testing purpose
+
+
+EMAIL_USE_TLS = False
+EMAIL_HOST = 'smtp.iitr.ac.in'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = 587

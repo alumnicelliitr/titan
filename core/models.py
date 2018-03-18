@@ -5,6 +5,11 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from datetime import datetime
 from django_countries.fields import CountryField
+from ckeditor.fields import RichTextField
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+import uuid
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -234,3 +239,33 @@ class Experience(models.Model):
     class Meta:
         ordering = ["user"]
 
+
+class Subscriber(models.Model):
+    user = models.OneToOneField(User, related_name='subscriber', verbose_name="Subscriber", on_delete=models.CASCADE,
+                                primary_key=True)
+    is_subscribed = models.BooleanField(default=True)
+    subscription_key = models.CharField(max_length=32,unique=True, blank=True)
+
+
+@receiver(post_save, sender=User)
+def create_user_subscriber(sender, instance, created, **kwargs):
+    if created:
+        Subscriber.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_subscriber(sender, instance, **kwargs):
+    instance.subscriber.save()
+
+
+@receiver(pre_save, sender=Subscriber)
+def create_subscriber(sender, instance, **kwargs):
+    if instance._state.adding :
+      key = uuid.uuid1().hex
+      instance.subscription_key = key    
+
+
+class EmailMessage(models.Model):
+  subject = models.CharField(max_length=255)
+  created_on = models.DateTimeField(auto_now_add=True)
+  message = RichTextField(default='')
+  include_name= models.BooleanField(default=True)

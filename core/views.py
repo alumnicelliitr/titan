@@ -8,11 +8,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from datetime import datetime
 import requests as http_requests
+from django.core.mail import EmailMultiAlternatives, get_connection
 import urllib, ssl
 import os
 import json
 from django.core.files import File
-
+from titan import settings
 from core.serializers import *
 
 
@@ -81,7 +82,6 @@ class OAuthRedirectView(APIView):
     def get(request):
         auth_code = request.GET.get('code')
         print(auth_code)
-        print(os.environ.get('CLIENT_ID'))
         headers = {'content-type': 'application/x-www-form-urlencoded'}
         payload1 = "client_id=%s&" \
                    "client_secret=%s&" \
@@ -141,7 +141,109 @@ class OAuthRedirectView(APIView):
         return Response(user_data, status=status.HTTP_202_ACCEPTED)
 
 
+from django.contrib.sites.shortcuts import get_current_site
+from django import forms
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
+
+class UserForm(forms.Form):
+    email = forms.EmailField()  
+    password = forms.CharField(widget=forms.PasswordInput())    
+
+def unsubscribe(request,key):
+    message = ''
+    try:
+        subscriber = Subscriber.objects.get(subscription_key=key)
+        subscriber.is_subscribed = False
+        mail_subject = 'Unsubscribe to AlumniIITR'
+        current_site = get_current_site(request)
+        text = render_to_string('core/unsubscribe.html', {
+                'domain':current_site.domain,
+                'sub': subscriber,
+            })
+        to_email = subscriber.user.email_1
+        if to_email:
+            my_username = settings.EMAIL_HOST_USER
+            connection = get_connection() # uses SMTP server specified in settings.py
+            connection.open()
+            email = EmailMultiAlternatives(mail_subject, text, my_username, to=[to_email])
+            email.content_subtype = 'html'
+            email.send()
+            connection.close() 
+        subscriber.save()
+        message = 'Unsubscribed successfully'
+    except:
+        message = 'Invalid Subscription key'
+    return render(request, 'core/sub-unsub.html', {'message':message, }) 
+
+def resubscribe(request,key):
+    message = ''
+    try:
+        subscriber = Subscriber.objects.get(subscription_key=key)
+        subscriber.is_subscribed = True
+        subscriber.save()
+        mail_subject = 'Resubscribe to AlumniIITR'
+        current_site = get_current_site(request)
+        text = render_to_string('core/resubscribe.html', {
+                'domain':current_site.domain,
+                'sub': subscriber,
+            })
+        to_email = subscriber.user.email_1
+        if to_email:
+            my_username = settings.EMAIL_HOST_USER
+            connection = get_connection() # uses SMTP server specified in settings.py
+            connection.open()
+            email = EmailMultiAlternatives(mail_subject, text, my_username, to=[to_email])
+            print('done done')
+            email.content_subtype = 'html'
+            email.send()
+            connection.close() 
+        subscriber.save()
+        message = 'Subscribed successfully'
+    except:
+        message = 'Invalid Subscription key'
+    return render(request, 'core/sub-unsub.html', {'message':message, })  
 
 
-
+def send_mail(request,id):
+    message = get_object_or_404(EmailMessage, pk=id)
+    subscribers = Subscriber.objects.filter(is_subscribed=True)
+    mail_subject = message.subject
+    current_site = get_current_site(request)
+    form = UserForm()
+    success=False
+    if request.method == "POST":
+        form = UserForm(request.POST)
+    if form.is_valid():
+        my_username = form.cleaned_data['email']
+        my_password = form.cleaned_data['password']
+        connection = get_connection( 
+                            username=my_username, 
+                            password=my_password,
+                            fail_silently=False)
+        connection.open()
+        emails = []
+        for sub in subscribers:
+            text = render_to_string('core/msg.html', {
+                'domain':current_site.domain,
+                'sub': sub,
+                'msg': message,
+            })
+            to_email = sub.user.email_1
+            #email = EmailMsg(mail_subject, text, to=[to_email], connection=connection)
+            if to_email:
+                print(to_email)
+                email = EmailMultiAlternatives(mail_subject, text, my_username, [to_email])
+                #email.attach_alternative(text_content, "text/html")
+                email.content_subtype = 'html'
+                emails.append(email)
+                #email.send()
+        connection.send_messages(emails) 
+        connection.close()
+        success = True
+    context = {
+            'userform'  : form,
+            'success' : success,
+        }
+    return render(request, 'core/mailform.html', context) 
 
