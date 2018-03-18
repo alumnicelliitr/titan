@@ -122,14 +122,14 @@ class OAuthRedirectView(APIView):
             user.gender = oauth_user_data['gender']
             user.email_1 = oauth_user_data['email']
             user.save()
-
+            """
             if oauth_user_data['photo']:
                 img_url = 'http://people.iitr.ernet.in/media/'+oauth_user_data['photo']
                 name = oauth_user_data['photo'].split('/')[-1]
                 result = urllib.urlretrieve(img_url)
                 print(result)
                 user.image.save(name, File(open(result[0])), save=True)
-
+            """
             if oauth_user_data['is_alumni']:
                 Alumni.objects.create(user = user, is_verified=True)   
 
