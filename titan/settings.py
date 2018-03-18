@@ -132,6 +132,6 @@ SITE_ID = 1 #Just for testing purpose
 
 EMAIL_USE_TLS = False
 EMAIL_HOST = 'smtp.iitr.ac.in'
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = os.environ.get('EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_PORT = 587
