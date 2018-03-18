@@ -223,6 +223,7 @@ def send_mail(request,id):
                             fail_silently=False)
         connection.open()
         emails = []
+
         for sub in subscribers:
             text = render_to_string('core/msg.html', {
                 'domain':current_site.domain,
@@ -232,7 +233,6 @@ def send_mail(request,id):
             to_email = sub.user.email_1
             #email = EmailMsg(mail_subject, text, to=[to_email], connection=connection)
             if to_email:
-                print(to_email)
                 email = EmailMultiAlternatives(mail_subject, text, my_username, [to_email])
                 #email.attach_alternative(text_content, "text/html")
                 email.content_subtype = 'html'

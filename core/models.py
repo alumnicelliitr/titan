@@ -174,7 +174,7 @@ class Social(models.Model):
     value = models.URLField()
 
     def __str__(self):
-        return str(self.name)
+        return str(self.value)
 
     class Meta:
         verbose_name_plural = "Social Accounts"
