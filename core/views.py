@@ -356,3 +356,65 @@ class MemberList(generics.ListAPIView):
 class VisitorCreate(generics.CreateAPIView):
     queryset = Visitor.objects.all()
     serializer_class = VisitorSerializer
+
+
+class ContactCreate(generics.CreateAPIView):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+    def perform_create(self, serializer):
+        user = get_object_or_404(User, pk=self.request.user.id)
+        serializer.save(user=user)
+
+
+class ContactDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+
+
+class SocialCreate(generics.CreateAPIView):
+    queryset = Social.objects.all()
+    serializer_class = SocialSerializer
+    def perform_create(self, serializer):
+        user = get_object_or_404(User, pk=self.request.user.id)
+        serializer.save(user=user)
+
+
+class SocialDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Social.objects.all()
+    serializer_class = SocialSerializer
+
+
+class UserLocationCreate(generics.CreateAPIView):
+    queryset = UserLocation.objects.all()
+    serializer_class = UserLocationSerializer
+    def perform_create(self, serializer):
+        user = get_object_or_404(User, pk=self.request.user.id)
+        serializer.save(user=user)
+
+
+class UserLocationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = UserLocation.objects.all()
+    serializer_class = UserLocationSerializer
+
+
+class ExperienceCreate(generics.CreateAPIView):
+    queryset = Experience.objects.all()
+    serializer_class = ExperienceSerializer
+    def perform_create(self, serializer):
+        user = get_object_or_404(User, pk=self.request.user.id)
+        serializer.save(user=user)
+
+
+class ExperienceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Experience.objects.all()
+    serializer_class = ExperienceSerializer
+
+
+class SkillCreate(generics.ListCreateAPIView):
+    queryset = Skill.objects.all()
+    serializer_class = SkillSerializer
+    def perform_create(self, serializer):
+        user = get_object_or_404(User, pk=self.request.user.id)
+        skill = serializer.save()
+        skill.users.add(user)
+        skill.save()
