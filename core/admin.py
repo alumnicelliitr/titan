@@ -102,3 +102,8 @@ admin.site.register(Subscriber, SubscriberAdmin)
 admin.site.register(Visitor, VisitorAdmin)
 
 
+
+from rest_framework.authtoken.admin import TokenAdmin
+
+TokenAdmin.raw_id_fields = ('user',)
+

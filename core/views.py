@@ -15,7 +15,7 @@ import json
 from django.core.files import File
 from titan import settings
 from core.serializers import *
-
+from rest_framework.authtoken.models import Token
 
 class Register(APIView):
     pass
@@ -29,7 +29,7 @@ class Register(APIView):
         return Response(request.data, status=status.HTTP_202_ACCEPTED)
     """
 
-
+"""
 class Login(APIView):
 
     serializer_class = LoginSerializer
@@ -43,7 +43,7 @@ class Login(APIView):
         user_data = UserSerializer(user).data
 
         return Response(user_data, status=status.HTTP_202_ACCEPTED)
-
+"""
 class LoggedInUser(APIView):
     def get(self, request):
         if request.user.is_authenticated():
@@ -53,10 +53,17 @@ class LoggedInUser(APIView):
         return Response('logged_out', status=status.HTTP_401_UNAUTHORIZED)
 
 class Logout(APIView):
+    queryset = User.objects.all()
 
-    def post(request):
-        logout(request)
-        return Response({'detail': "user logged out"}, status=status.HTTP_200_OK)
+    def get(self, request, format=None):
+        # simply delete the token to force a login
+        try:
+            token = Token.objects.get(user=request.user)
+            token.delete()
+            return Response('success',status=status.HTTP_200_OK)
+        except:
+            return Response('invalid', status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 class RegisterUser(APIView):
@@ -138,10 +145,13 @@ class OAuthRedirectView(APIView):
 
         # https://channeli.in:8080/media/
         # 5ce1f230e41e6c95ff76b4844bc68d7af264c711
-        user.backend = 'django.contrib.auth.backends.ModelBackend'
-        login(request, user)
+        token, created = Token.objects.get_or_create(user=user)
         user_data = UserSerializer(user).data
-        return Response(user_data, status=status.HTTP_202_ACCEPTED)
+        data = {
+            'user': user_data,
+            'token': token.key
+        }
+        return Response(data, status=status.HTTP_202_ACCEPTED)
 
 
 from django.contrib.sites.shortcuts import get_current_site

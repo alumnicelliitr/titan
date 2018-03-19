@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'newsletter',
     'rest_framework_docs',
     'ckeditor',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,13 @@ TEMPLATES = [
         },
     },
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 LOGIN_URL = 'api/core/login'
 LOGOUT_URL = 'api/core/logout'
