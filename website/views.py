@@ -2,14 +2,16 @@
 from __future__ import unicode_literals
 
 from django.utils import timezone
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import (
     IsAuthenticated,
 )
+from django.shortcuts import get_object_or_404
 
 from website.serializers import *
+
 
 class NewsLetterList(generics.ListAPIView):
     queryset = NewsLetter.objects.all()
@@ -24,6 +26,7 @@ class NewsLetterDetailView(generics.RetrieveAPIView):
 class EventDetailView(generics.RetrieveAPIView):
     queryset = Event.objects.all()
     serializer_class = EventDetailSerializer
+
 
 class EventsList(generics.ListAPIView):
     queryset = Event.objects.all()
@@ -62,6 +65,14 @@ class ShareYourStoryCreateView(generics.CreateAPIView):
     queryset = ShareYourStory.objects.all()
     serializer_class = ShareYourStoryCreateSerializer
 
+    # def perform_create(self, serializer):
+    #     print(self.request.user)
+    #     if not self.request.user:
+    #         return Response({'detail': "Not logged In"}, status=status.HTTP_404_NOT_FOUND)
+    #
+    #     user = get_object_or_404(User, pk=self.request.user)
+    #     serializer.save(user=user.username)
+
 
 class KnowYourAlumniView(generics.ListAPIView):
     queryset = KnowYourAlumni.objects.all()
@@ -71,6 +82,11 @@ class KnowYourAlumniView(generics.ListAPIView):
 class KnowYourAlumniCreateView(generics.CreateAPIView):
     queryset = KnowYourAlumni.objects.all()
     serializer_class = KnowYourAlumniCreateSerializer
+
+    # def perform_create(self, serializer):
+    #     print(self.request.user)
+    #     user = get_object_or_404(User, pk=self.request.user.id)
+    #     serializer.save(user=user.username)
 
 
 # class HeadlinesTrendingListView(generics.ListAPIView):
@@ -105,13 +121,10 @@ class NodeViews(APIView):
 #     print(queryset)
 #     serializer_class = NodeSerializer
 
-class AlumniCardRegisterView(generics.CreateAPIView):
-    queryset = AlumniCard.objects.all()
-    serializer_class = AlumniCardSerializer
-
 class AwardsListView(generics.ListAPIView):
     queryset = Award.objects.all()
     serializer_class = AwardSerializer
+
 
 class DonationSchemeListView(generics.ListAPIView):
     queryset = DonationScheme.objects.all()
@@ -156,13 +169,15 @@ def level(request, level0, level1=None, level2=None):
     else:
         active = load_level(level2, 2)
     base = load_level(level0, 0)
-    if active == None:
-        # try if a page
-        return redirect('/')
-    context = {
-        'mTabs': mTabs,
-        'active': active,
-        'base': base,
-    }
-    return render(request, 'website/page.html', context)
 
+
+class AlumniCardRegisterView(generics.CreateAPIView):
+    serializer_class = AlumniCardSerializaler
+
+    def perform_create(self, serializer):
+        # user = get_object_or_404(User, pk=self.request.user.id)
+
+        print(hasattr(self.request.user, 'alumnicard'))
+        if hasattr(self.request.user, 'alumnicard'):
+            return Response({'detail': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()

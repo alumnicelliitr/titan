@@ -47,7 +47,7 @@ class EventDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('id', 'title', 'content', 'images','start_date', 'end_date', 'venue', 'link')
+        fields = ('id', 'title', 'content', 'images', 'start_date', 'end_date', 'venue', 'link')
 
 
 class MoUSerializer(serializers.ModelSerializer):
@@ -107,17 +107,19 @@ class ShareYourStorySerializer(serializers.ModelSerializer):
         model = ShareYourStory
         fields = '__all__'
 
+
 class KnowYourAlumniCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = KnowYourAlumni
-        fields = ('title', 'description', 'link', 'thumbnail')
+        fields = '__all__'
 
 
 class KnowYourAlumniSerializer(serializers.ModelSerializer):
     user = serializers.RelatedField(source='user', read_only=True)
+
     class Meta:
         model = KnowYourAlumni
-        fields = ('user', 'title', 'description', 'link')
+        fields = '__all__'
 
 
 class NodeSerializer(serializers.ModelSerializer):
@@ -127,10 +129,12 @@ class NodeSerializer(serializers.ModelSerializer):
         model = Node
         fields = '__all__'
 
-class AlumniCardSerializer(serializers.ModelSerializer):
+
+class AlumniCardSerializaler(serializers.ModelSerializer):
     photo = serializers.ImageField(max_length=None, use_url=True)
     photo_sign = serializers.ImageField(max_length=None, use_url=True)
     photo_degree = serializers.ImageField(max_length=None, use_url=True)
+    delivered= serializers.BooleanField(read_only=True)
 
     class Meta:
         model = AlumniCard
@@ -152,16 +156,17 @@ class CustomEventSerializer(serializers.ListSerializer):
         resdata.append({'Alumni Meet': {
             'upcoming': super(CustomEventSerializer, self).to_representation(data1),
             'past': super(CustomEventSerializer, self).to_representation(data2)
-            }})
+        }})
         resdata.append({'Guest Lecture': {
             'upcoming': super(CustomEventSerializer, self).to_representation(data3),
             'past': super(CustomEventSerializer, self).to_representation(data4)
-            }})
+        }})
         resdata.append({'Re Union': {
             'upcoming': super(CustomEventSerializer, self).to_representation(data5),
             'past': super(CustomEventSerializer, self).to_representation(data6)
-            }})
+        }})
         return resdata
+
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
@@ -174,6 +179,7 @@ class AwardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Award
         fields = '__all__'
+
 
 class DonationSchemeSerializer(serializers.ModelSerializer):
     class Meta:

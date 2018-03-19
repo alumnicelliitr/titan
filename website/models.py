@@ -7,6 +7,7 @@ from django_countries.fields import CountryField
 from core.models import User
 import os
 
+
 # TODO: Make a model for Awards
 
 class NewsLetter(models.Model):
@@ -174,15 +175,18 @@ class KnowYourAlumni(models.Model):
     title = models.CharField(max_length=100, default=None)
     link = models.URLField(default=None, blank=True, verbose_name='External Link')
     description = models.TextField(default=None)
-    thumbnail = models.ImageField(verbose_name='Thumbnail', upload_to='img/KnowYourAlum', default=None) # TODO: make a dynamic folder
+    thumbnail = models.ImageField(verbose_name='Thumbnail', upload_to='img/KnowYourAlum',
+                                  default=None)  # TODO: make a dynamic folder
 
 
 class ShareYourStory(models.Model):
-    # user = models.ForeignKey(User, default=None, related_name='shareYourStory', on_delete=models.CASCADE, blank=True)
+    user = models.ForeignKey(User, default=None, related_name='shareYourStory', on_delete=models.CASCADE, blank=True)
     title = models.CharField(max_length=100, default=None, verbose_name='Story Title')
     description = models.TextField(default=None)
     link = models.URLField(default=None, verbose_name='Article Link')
-    thumbnail = models.ImageField(verbose_name='Image', upload_to='img/ShareYourStory', default=None) # TODO: make a dynamic folder
+    thumbnail = models.ImageField(verbose_name='Image', upload_to='img/ShareYourStory',
+                                  default=None)  # TODO: make a dynamic folder
+
 
 class Node(models.Model):
     url_name = models.CharField(max_length=50)  # Would be used for URL
@@ -212,20 +216,25 @@ class Node(models.Model):
 
 def get_file_path(instance, filename):
     name, ext = os.path.splitext(filename)
-    return '{0}/{1}'.format("img/alumnicard", str(instance.first_name) + str(ext))
+    return '{0}/{1}'.format("img/alumnicard", str(instance.user) + str(ext))
 
 
 class AlumniCard(models.Model):
-    user = models.ForeignKey(User, default=None, related_name='alumniCard', on_delete=models.CASCADE)
+    user = models.OneToOneField(User, default=None, related_name='alumniCard', on_delete=models.CASCADE)
     delivered = models.BooleanField(default=False)
+    office_add = models.CharField(default=None, verbose_name="current office address", max_length=500)
+    residence_add = models.CharField(default=None, verbose_name="current residence address", max_length=500)
+    delivery_add = models.CharField(default=None, verbose_name="current delivery address", max_length=500)
+    address = models.CharField(default=None, max_length=500)
     photo = models.ImageField(blank=False, upload_to=get_file_path)
     photo_sign = models.ImageField(blank=False, upload_to=get_file_path)
     photo_degree = models.ImageField(blank=False, upload_to=get_file_path)
 
     def __str__(self):
-        return self.first_name + " " + self.middle_name + " " + self.last_name
+        return self.user
 
     ## add Mail in the front end
+
 
 # Award Model to be checked
 class Award(models.Model):
@@ -235,6 +244,7 @@ class Award(models.Model):
 
     def __str__(self):
         return self.title
+
 
 # donation model
 class DonationScheme(models.Model):
