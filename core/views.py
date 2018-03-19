@@ -123,6 +123,7 @@ class OAuthRedirectView(APIView):
             
             user.gender = oauth_user_data['gender']
             user.email_1 = oauth_user_data['email']
+            user.branch = oauth_user_data['branch_code']
             user.save()
             """
             if oauth_user_data['photo']:

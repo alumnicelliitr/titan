@@ -35,6 +35,7 @@ class LoginSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    branch = serializers.CharField(source='get_branch_display')
     class Meta:
         model = User
         fields = ('name', 'email', 'enr_no', 'course', 'branch', 'password')
