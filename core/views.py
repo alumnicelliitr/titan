@@ -88,7 +88,8 @@ class OAuthRedirectView(APIView):
                    "code=%s" % (os.environ.get('CLIENT_ID'), os.environ.get('CLIENT_SECRET'), auth_code)
         req1 = http_requests.post('https://channeli.in/oauth/gettoken/',
                                   data=payload1,
-                                  headers=headers)
+                                  headers=headers,
+                                  verify=False)
         print(req1)
         if not req1.status_code == 200:
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -99,7 +100,8 @@ class OAuthRedirectView(APIView):
                    "access_token=%s" % (os.environ.get('CLIENT_ID'), os.environ.get('CLIENT_SECRET'), access_token)
         req2 = http_requests.post('https://channeli.in/oauth/getuserdata/',
                                   data=payload2,
-                                  headers=headers)
+                                  headers=headers,
+                                  verify=False)
         print(req2.status_code)
         if not req2.status_code == 200:
             return Response(status=status.HTTP_403_FORBIDDEN)
