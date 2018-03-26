@@ -44,7 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
         user = super(UserSerializer, self).create(validated_data)
         user.set_password(validated_data['password'])
         user.save()
-        return user    
+        return user
 
 
 class AlumniSerializer(serializers.ModelSerializer):
@@ -58,29 +58,29 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = '__all__'
-        read_only_fields = ('id', 'user',)  
+        read_only_fields = ('id', 'user',)
 
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = '__all__'
-        read_only_fields = ('id', 'user',)  
+        read_only_fields = ('id', 'user',)
 
 
 class SocialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Social
         fields = '__all__'
-        read_only_fields = ('id', 'user',)   
+        read_only_fields = ('id', 'user',)
 
 
 class LocationSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Location
         fields = '__all__'
-        read_only_fields = ('id',) 
+        read_only_fields = ('id',)
 
 
 class UserLocationSerializer(serializers.ModelSerializer):
@@ -88,7 +88,7 @@ class UserLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserLocation
         fields = '__all__'
-        read_only_fields = ('id', 'user',)      
+        read_only_fields = ('id', 'user',)
 
 
 class OrganisationSerializer(serializers.ModelSerializer):
@@ -103,14 +103,14 @@ class ExperienceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experience
         fields = '__all__'
-        read_only_fields = ('id', 'user',) 
+        read_only_fields = ('id', 'user',)
 
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
         fields = '__all__'
-        read_only_fields = ('id','user')                     
+        read_only_fields = ('id','user')
 
 
 class GetUserSerializer(serializers.ModelSerializer):
@@ -152,4 +152,18 @@ class VisitorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Visitor
         fields = '__all__'
-        read_only_fields = ('id','is_subscribed', 'subscription_key') 
+        read_only_fields = ('id','is_subscribed', 'subscription_key')
+
+
+class DistinguishedAlumniNomineeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DistinguishedAlumniNominee
+        fields = '__all__'
+        read_only_fields = ('id',)
+
+
+class DistinguishedAlumniNominatorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DistinguishedAlumniNominator
+        fields = '__all__'
+        read_only_fields = ('id',)

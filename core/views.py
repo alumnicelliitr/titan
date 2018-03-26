@@ -79,7 +79,7 @@ class RegisterUser(APIView):
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = GetUserSerializer      
+    serializer_class = GetUserSerializer
 
 
 class OAuthRedirectView(APIView):
@@ -124,10 +124,10 @@ class OAuthRedirectView(APIView):
             if oauth_user_data['admission_year']:
 
                 user.joining_date = datetime.strptime(str(oauth_user_data['admission_year'])+'-07-15', '%Y-%m-%d').date()
-            if oauth_user_data['passout_year']: 
+            if oauth_user_data['passout_year']:
 
                 user.leaving_date = datetime.strptime(str(oauth_user_data['passout_year'])+'-05-15', '%Y-%m-%d').date()
-            
+
             user.gender = oauth_user_data['gender']
             user.email_1 = oauth_user_data['email']
             user.branch = oauth_user_data['branch_code']
@@ -141,7 +141,7 @@ class OAuthRedirectView(APIView):
                 user.image.save(name, File(open(result[0])), save=True)
             """
             if oauth_user_data['is_alumni']:
-                Alumni.objects.create(user = user, is_verified=True)   
+                Alumni.objects.create(user = user, is_verified=True)
 
         # https://channeli.in:8080/media/
         # 5ce1f230e41e6c95ff76b4844bc68d7af264c711
@@ -160,8 +160,8 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 
 class UserForm(forms.Form):
-    email = forms.EmailField()  
-    password = forms.CharField(widget=forms.PasswordInput())    
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput())
 
 def unsubscribe(request,key):
     message = ''
@@ -188,12 +188,12 @@ def unsubscribe(request,key):
             email = EmailMultiAlternatives(mail_subject, text, my_username, to=[to_email])
             email.content_subtype = 'html'
             email.send()
-            connection.close() 
+            connection.close()
         subscriber.save()
         message = 'Unsubscribed successfully'
     except:
         message = 'Invalid Subscription key'
-    return render(request, 'core/sub-unsub.html', {'message':message, }) 
+    return render(request, 'core/sub-unsub.html', {'message':message, })
 
 
 
@@ -217,12 +217,12 @@ def unsubscribe_visitor(request,key):
             email = EmailMultiAlternatives(mail_subject, text, my_username, to=[to_email])
             email.content_subtype = 'html'
             email.send()
-            connection.close() 
+            connection.close()
         subscriber.save()
         message = 'Unsubscribed successfully'
     except:
         message = 'Invalid Subscription key'
-    return render(request, 'core/sub-unsub.html', {'message':message, }) 
+    return render(request, 'core/sub-unsub.html', {'message':message, })
 
 
 
@@ -247,12 +247,12 @@ def resubscribe(request,key):
             print('done done')
             email.content_subtype = 'html'
             email.send()
-            connection.close() 
+            connection.close()
         subscriber.save()
         message = 'Subscribed successfully'
     except:
         message = 'Invalid Subscription key'
-    return render(request, 'core/sub-unsub.html', {'message':message, })  
+    return render(request, 'core/sub-unsub.html', {'message':message, })
 
 
 def resubscribe_visitor(request,key):
@@ -276,12 +276,12 @@ def resubscribe_visitor(request,key):
             print('done done')
             email.content_subtype = 'html'
             email.send()
-            connection.close() 
+            connection.close()
         subscriber.save()
         message = 'Subscribed successfully'
     except:
         message = 'Invalid Subscription key'
-    return render(request, 'core/sub-unsub.html', {'message':message, })      
+    return render(request, 'core/sub-unsub.html', {'message':message, })
 
 
 def send_mail(request,id):
@@ -297,8 +297,8 @@ def send_mail(request,id):
     if form.is_valid():
         my_username = form.cleaned_data['email']
         my_password = form.cleaned_data['password']
-        connection = get_connection( 
-                            username=my_username, 
+        connection = get_connection(
+                            username=my_username,
                             password=my_password,
                             fail_silently=False)
         connection.open()
@@ -339,14 +339,14 @@ def send_mail(request,id):
                     emails.append(email)
                     receivers.append(to_email)
 
-        connection.send_messages(emails) 
+        connection.send_messages(emails)
         connection.close()
         success = True
     context = {
             'userform'  : form,
             'success' : success,
         }
-    return render(request, 'core/mailform.html', context) 
+    return render(request, 'core/mailform.html', context)
 
 class MemberList(generics.ListAPIView):
     queryset = Team.objects.all()
@@ -418,3 +418,24 @@ class SkillCreate(generics.ListCreateAPIView):
         skill = serializer.save()
         skill.users.add(user)
         skill.save()
+
+
+class Nominate(APIView):
+
+    def post(self, request):
+        if 'nominee' not in request.data or 'nominator' not in request.data:
+                return Response(
+                    'ERROR: Details is missing. Please check '
+                    'input!!',
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        request_data_nominee = json.loads(request.data['nominee'])
+        request_data_nominator = json.loads(request.data['nominator'])
+        nominee = DistinguishedAlumniNomineeSerializer(data=request_data_nominee)
+        if nominee.is_valid(raise_exception=True):
+            nom = nominee.save()
+            nominator = DistinguishedAlumniNominatorSerializer(data=request_data_nominator)
+            if nominee.is_valid(raise_exception=True):
+                nominator_data =  nominator.save(nominee = nom)
+                return Response('success', status=status.HTTP_202_ACCEPTED)
+        return Response('ERROR Please check input!!',status=status.HTTP_400_BAD_REQUEST)

@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^user/experience/$',  views.ExperienceCreate.as_view(), name='create-experience'),
     url(r'^user/experience/(?P<key>(.*))/$', views.ExperienceDetail.as_view(), name = 'update-experience'),
     url(r'^user/skill/(?P<key>(.*))/$', views.SkillCreate.as_view(), name = 'create-skill'),
+    url(r'^nominate/$', views.Nominate.as_view(), name='nominate'),
 ]

@@ -112,14 +112,14 @@ BRANCHES = (
 ('MGLT','Geological Technology'),
 ('MGPT','Geophysical Technology'),
 ('MHY','Hydrology'),
-('MIED','Mechanical and Industrial Engineering'), 
+('MIED','Mechanical and Industrial Engineering'),
 ('MMED','Metallurgical and Materials Engineering'),
 ('MMT','Metallurgy Dual'),
 ('MSAM','Applied Mathematics'),
 ('MSC','Chemistry'),
 ('MSCM','M.Sc. Mathematics'),
 ('MSCPH','Physics'),
-('MSD','Management Studies'), 
+('MSD','Management Studies'),
 ('MSIM','M.sc Industrial Mathematics and Informatics'),
 ('MSM','Applied Mathematics'),
 ('MSP','Physics'),
@@ -216,7 +216,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.name
 
     def get_username(self):
-        return str(self.enr_no)    
+        return str(self.enr_no)
 
     def __str__(self):
         return str(self.enr_no)
@@ -256,7 +256,7 @@ class Team(models.Model):
         return '%s' % self.user.name
 
     class Meta:
-        ordering = ["user"]        
+        ordering = ["user"]
 
 
 class Contact(models.Model):
@@ -312,16 +312,16 @@ class Location(models.Model):
 
 
 class UserLocation(models.Model):
-    user = models.ForeignKey(User,related_name='locations', on_delete=models.CASCADE)   
+    user = models.ForeignKey(User,related_name='locations', on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return '%s' % self.user.name + ' '+ self.location.city 
+        return '%s' % self.user.name + ' '+ self.location.city
 
     class Meta:
-        ordering = ["user"]        
+        ordering = ["user"]
 
 
 class Organisation(models.Model):
@@ -331,7 +331,7 @@ class Organisation(models.Model):
         ('C', 'Company'),
     )
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    org_type = models.CharField(max_length=10, choices=TYPES, verbose_name="Organisation Type")  
+    org_type = models.CharField(max_length=10, choices=TYPES, verbose_name="Organisation Type")
     name  = models.CharField(max_length=50)
     logo = models.ImageField(upload_to='logos', blank=True, null=True)
     url = models.URLField(blank=True, null=True)
@@ -344,7 +344,7 @@ class Experience(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='experiences')
     org = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name='experiences')
     start_date = models.DateField()
-    end_date = models.DateField(blank=True, null=True)  
+    end_date = models.DateField(blank=True, null=True)
     description = models.TextField()
 
     def __str__(self):
@@ -384,13 +384,13 @@ def save_user_subscriber(sender, instance, **kwargs):
 def create_subscriber(sender, instance, **kwargs):
     if instance._state.adding :
       key = uuid.uuid1().hex
-      instance.subscription_key = key    
+      instance.subscription_key = key
 
 @receiver(pre_save, sender=Visitor)
 def create_visitor(sender, instance, **kwargs):
     if instance._state.adding :
       key = uuid.uuid1().hex
-      instance.subscription_key = key    
+      instance.subscription_key = key
 
 
 
@@ -399,3 +399,52 @@ class EmailMessage(models.Model):
   created_on = models.DateTimeField(auto_now_add=True)
   message = RichTextField(default='')
   include_name= models.BooleanField(default=True)
+
+
+
+class DistinguishedAlumniNominee(models.Model):
+  CATEGORY_CHOICES = (
+        ('AR', 'Academic Research',),
+        ('CE', 'Corporate Development/Adminstration/Entrepreneurship',),
+        ('SA', 'Social Sciences/Engineering and Services/Public Adminstration',),
+        ('SS', 'Service to Society',),
+    )
+  nominee_name = models.CharField(max_length=100)
+  nominee_email = models.EmailField()
+  nominee_contact = models.CharField(max_length=20)
+  nominee_degree = models.CharField(max_length=50)
+  nominee_yearpass = models.IntegerField()
+  nominee_quals = models.TextField(null=True,blank=True)
+  nominee_address = models.TextField()
+  nominee_designation = models.CharField(max_length=50)
+  nominee_category = models.CharField(max_length=100,choices=CATEGORY_CHOICES)
+  nominee_description = models.TextField()
+  nominee_webpage = models.CharField(max_length=50,null=True,blank=True)
+  nominee_linkedin = models.CharField(max_length=50,null=True,blank=True)
+  nominee_awards = models.TextField(null=True,blank=True)
+  nominee_photo = models.ImageField(blank=False,upload_to='distinguisted/images/')
+  nominee_resume = models.FileField(blank=False,upload_to='distinguisted/resumes/')
+  nominee_optional1 = models.FileField(blank=True,upload_to='distinguisted/optional/')
+  def __str__(self):
+    try:
+      nominator = self.nominator.get().nominator_name
+    except:
+      nominator = "NONE"
+    return self.nominee_name+" nominated by "+nominator
+
+
+class DistinguishedAlumniNominator(models.Model):
+  CHOICES = (
+    ('Y','Yes'),
+    ('N','No'),
+    )
+  nominee = models.ForeignKey(DistinguishedAlumniNominee,related_name='nominator')
+  nominator_name = models.CharField(max_length=50)
+  nominator_email = models.EmailField()
+  nominator_contact = models.CharField(max_length=20)
+  nominator_designation = models.CharField(max_length=50)
+  nominator_address = models.TextField()
+  nominator_affiliation = models.TextField()
+  nominator_moreinfo = models.CharField(max_length=10,choices=CHOICES)
+  def __str__(self):
+    return self.nominator_name+" nominated "+self.nominee.nominee_name

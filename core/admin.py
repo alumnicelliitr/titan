@@ -15,6 +15,8 @@ admin.site.register(Alumni)
 admin.site.register(Social)
 admin.site.register(UserLocation)
 admin.site.register(Experience)
+admin.site.register(DistinguishedAlumniNominee)
+admin.site.register(DistinguishedAlumniNominator)
 
 
 
@@ -36,7 +38,7 @@ def admin_link(attr, short_description, empty_description="-"):
     empty_description (str):
         Value to display if the related field is None.
 
-    The wrapped method receives the related object and should 
+    The wrapped method receives the related object and should
     return the link text.
 
     Usage:
