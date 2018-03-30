@@ -110,15 +110,13 @@ class ShareYourStorySerializer(serializers.ModelSerializer):
 
 class KnowYourAlumniCreateSerializer(serializers.ModelSerializer):
     thumbnail = serializers.ImageField(max_length=None, use_url=True)
-    def get_queryset():
-        queryset=User.objects.all()
     class Meta:
         model = KnowYourAlumni
         fields = ('user', 'thumbnail', 'title', 'description', 'link')
 
 
 class KnowYourAlumniSerializer(serializers.ModelSerializer):
-    user = serializers.RelatedField(source='user', read_only=True)
+    # user = serializers.RelatedField(source='user', read_only=True)
 
     class Meta:
         model = KnowYourAlumni
