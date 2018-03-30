@@ -2,17 +2,17 @@
 from __future__ import unicode_literals
 
 from django.utils import timezone
-from rest_framework import generics, status
+from rest_framework import generics, status, authentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import (
     IsAuthenticated,
 )
 from django.shortcuts import get_object_or_404
-
+from django.core.exceptions import  ObjectDoesNotExist
 from website.serializers import *
 
-
+from core.models import User, Alumni
 class NewsLetterList(generics.ListAPIView):
     queryset = NewsLetter.objects.all()
     serializer_class = NewsLetterSerializer
@@ -171,13 +171,36 @@ def level(request, level0, level1=None, level2=None):
     base = load_level(level0, 0)
 
 
-class AlumniCardRegisterView(generics.CreateAPIView):
+class AlumniCardRegisterView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)  
     serializer_class = AlumniCardSerializaler
 
-    def perform_create(self, serializer):
-        # user = get_object_or_404(User, pk=self.request.user.id)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        user = request.user
+        try:
+            if user.alum:
+                try:
+                    if user.alumniCard:
+                        return Response({'message': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
+                except:
+                    serializer.save()
+                    return Response({'message': "Successfully Registered for Alumni card!"}, status=status.HTTP_201_CREATED)
+        except:
+            return Response({'message': "Not an Alumni"}, status=status.HTTP_400_BAD_REQUEST)
+         
 
-        print(hasattr(self.request.user, 'alumnicard'))
-        if hasattr(self.request.user, 'alumnicard'):
-            return Response({'detail': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
+
+class CheckAlumniCard(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    def get(self, request, format=None):
+        user = request.user
+        try:
+            if user.alum:
+               return Response({'message': "Not an Alumni"}, status=status.HTTP_400_BAD_REQUEST) 
+        except ObjectDoesNotExist:
+            try:
+                if user.alumniCard:
+                    return Response({'message': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
+            except:    
+                return Response({'message': "Can register from Alumni card"}, status=status.HTTP_200_OK)

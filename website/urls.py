@@ -36,5 +36,6 @@ urlpatterns = [
     # Awards API
     url(r'^awards/$', AwardsListView.as_view(), name='awards' ),
     # Donations API
-    url(r'^donation_schemes/$', DonationSchemeListView.as_view(), name='awards' )
+    url(r'^donation_schemes/$', DonationSchemeListView.as_view(), name='awards' ),
+    url(r'^alumni_card$', CheckAlumniCard.as_view(), name='alumni-card-check')
 ]

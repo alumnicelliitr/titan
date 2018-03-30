@@ -172,8 +172,8 @@ class KnowYourAlumni(models.Model):
     Link in an external link such as medium blog.
     """
     user = models.ForeignKey(User, default=None, related_name='knowYourAlum', on_delete=models.CASCADE, blank=True, null=True)
-    title = models.CharField(max_length=100, default=None)
-    link = models.URLField(default=None, blank=True, verbose_name='External Link')
+    title = models.CharField(max_length=100, default=None, blank=True)
+    link = models.URLField(default=None, null=True, verbose_name='External Link')
     description = models.TextField(default=None)
     thumbnail = models.ImageField(verbose_name='Thumbnail', upload_to='img/KnowYourAlum',
                                   default=None)  # TODO: make a dynamic folder
@@ -237,7 +237,7 @@ class AlumniCard(models.Model):
     photo_degree = models.ImageField(blank=False, upload_to=get_file_path)
 
     def __str__(self):
-        return self.user
+        return self.user.get_username()
 
     ## add Mail in the front end
 

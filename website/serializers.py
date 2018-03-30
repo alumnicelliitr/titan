@@ -109,9 +109,12 @@ class ShareYourStorySerializer(serializers.ModelSerializer):
 
 
 class KnowYourAlumniCreateSerializer(serializers.ModelSerializer):
+    thumbnail = serializers.ImageField(max_length=None, use_url=True)
+    def get_queryset():
+        queryset=User.objects.all()
     class Meta:
         model = KnowYourAlumni
-        fields = '__all__'
+        fields = ('user', 'thumbnail', 'title', 'description', 'link')
 
 
 class KnowYourAlumniSerializer(serializers.ModelSerializer):
@@ -135,7 +138,8 @@ class AlumniCardSerializaler(serializers.ModelSerializer):
     photo_sign = serializers.ImageField(max_length=None, use_url=True)
     photo_degree = serializers.ImageField(max_length=None, use_url=True)
     delivered= serializers.BooleanField(read_only=True)
-
+    def get_queryset():
+        queryset=User.objects.all()
     class Meta:
         model = AlumniCard
         fields = '__all__'
