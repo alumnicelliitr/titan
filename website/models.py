@@ -27,7 +27,7 @@ class NewsLetter(models.Model):
 class Event(models.Model):
     EVENT_TYPES = (
         ("GL", "Guest Lecture"),
-        ("RU", "Re-Union"),
+        # ("RU", "Re-Union"),
         ("AM", "Alumni meet")
     )
     """

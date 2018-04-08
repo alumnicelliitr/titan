@@ -155,6 +155,8 @@ class CustomEventSerializer(serializers.ListSerializer):
         data6 = data.filter(type='RU', end_date__lte=timezone.now())
         # data3 = data.filter(type='Golden')
         # data4 = data.filter(type='Golden')
+        data1 = data1 + data5
+        data2 = data2 + data6
         resdata.append({'Alumni Meet': {
             'upcoming': super(CustomEventSerializer, self).to_representation(data1),
             'past': super(CustomEventSerializer, self).to_representation(data2)
@@ -163,10 +165,10 @@ class CustomEventSerializer(serializers.ListSerializer):
             'upcoming': super(CustomEventSerializer, self).to_representation(data3),
             'past': super(CustomEventSerializer, self).to_representation(data4)
         }})
-        resdata.append({'Re Union': {
-            'upcoming': super(CustomEventSerializer, self).to_representation(data5),
-            'past': super(CustomEventSerializer, self).to_representation(data6)
-        }})
+        # resdata.append({'Re Union': {
+        #     'upcoming': super(CustomEventSerializer, self).to_representation(data5),
+        #     'past': super(CustomEventSerializer, self).to_representation(data6)
+        # }})
         return resdata
 
 

@@ -160,3 +160,4 @@ class DistinguishedAlumniSerializer(serializers.ModelSerializer):
         model = DistinguishedAlumni
         fields = '__all__'
         read_only_fields = ('id',)
+
