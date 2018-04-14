@@ -225,6 +225,13 @@ def get_file_path(instance, filename):
     return '{0}/{1}'.format("img/alumnicard", str(instance.user) + str(ext))
 
 
+ADDRESS_CHOICES = (
+	("Office Address","Office Address"),
+	("Residence Address","Residence Address")
+)
+DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
+YEAR_CHOICES = ((x,x) for x in range(1847,2017))
+
 class AlumniCard(models.Model):
     user = models.OneToOneField(User, default=None, related_name='alumniCard', on_delete=models.CASCADE)
     delivered = models.BooleanField(default=False)
@@ -235,11 +242,51 @@ class AlumniCard(models.Model):
     photo = models.ImageField(blank=False, upload_to=get_file_path)
     photo_sign = models.ImageField(blank=False, upload_to=get_file_path)
     photo_degree = models.ImageField(blank=False, upload_to=get_file_path)
+    first_name = models.CharField(default=None, max_length=255)
+    middle_name = models.CharField(default=None, max_length=255,blank=True)
+    last_name = models.CharField(default=None, max_length=255)
+    dob = models.DateField(default=None)
+    degree_name = models.CharField(default=None, max_length=255)
+    degree_branch = models.CharField(default=None, max_length=255)
+    degree_year = models.IntegerField(default=None, choices=YEAR_CHOICES)
+    present_desig = models.CharField(default=None, max_length=255)
+    present_dept = models.CharField(default=None, max_length=255)
+    telephone = models.CharField(default=None, max_length=20,blank=True)
+    mobile = models.CharField(default=None, max_length=20)
+    email = models.EmailField(default=None)
+    address_for_correspondence = models.CharField(default="Office Address", choices=ADDRESS_CHOICES, max_length=50)
 
     def __str__(self):
-        return self.user.get_username()
+		return self.first_name+" "+self.middle_name+" "+self.last_name
 
-    ## add Mail in the front end
+class CurrentBatchAlumniCard(models.Model):
+    user = models.OneToOneField(User, default=None, related_name='currentAlumniCard', on_delete=models.CASCADE)
+    delivered = models.BooleanField(default=False)
+    office_add = models.CharField(default=None, verbose_name="current office address", max_length=500)
+    residence_add = models.CharField(default=None, verbose_name="current residence address", max_length=500)
+    delivery_add = models.CharField(default=None, verbose_name="current delivery address", max_length=500)
+    address = models.CharField(default=None, max_length=500)
+    photo = models.ImageField(blank=False, upload_to=get_file_path)
+    photo_sign = models.ImageField(blank=False, upload_to=get_file_path)
+    photo_degree = models.ImageField(blank=False, upload_to=get_file_path)
+    first_name = models.CharField(default=None, max_length=255)
+    middle_name = models.CharField(default=None, max_length=255,blank=True)
+    last_name = models.CharField(default=None, max_length=255)
+    dob = models.DateField(default=None)
+    degree_name = models.CharField(default=None, max_length=255)
+    degree_branch = models.CharField(default=None, max_length=255)
+    degree_year = models.IntegerField(default=None, choices=YEAR_CHOICES)
+    present_desig = models.CharField(default=None, max_length=255)
+    present_dept = models.CharField(default=None, max_length=255)
+    telephone = models.CharField(default=None, max_length=20,blank=True)
+    mobile = models.CharField(default=None, max_length=20)
+    email = models.EmailField(default=None)
+    address_for_correspondence = models.CharField(default="Office Address", choices=ADDRESS_CHOICES, max_length=50)
+
+    def __str__(self):
+		return self.first_name+" "+self.middle_name+" "+self.last_name
+
+
 
 
 # Award Model to be checked

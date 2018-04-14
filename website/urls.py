@@ -33,9 +33,10 @@ urlpatterns = [
     url(r'^nodes/$', NodeViews.as_view(), name='send-nodes'),
     # Alumni Card Register API
     url(r'^alumni_card/register$', AlumniCardRegisterView.as_view(), name='alumni-card-register'),
+    url(r'^alumni_card/current/register$', CurrentBatchAlumniCardRegisterView.as_view(), name='current-alumni-card-register'),
     # Awards API
     url(r'^awards/$', AwardsListView.as_view(), name='awards' ),
     # Donations API
     url(r'^donation_schemes/$', DonationSchemeListView.as_view(), name='awards' ),
-    url(r'^alumni_card$', CheckAlumniCard.as_view(), name='alumni-card-check')
+    url(r'^alumni_card$', CheckAlumniCard.as_view(), name='alumni-card-check'),
 ]

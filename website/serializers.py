@@ -142,6 +142,17 @@ class AlumniCardSerializaler(serializers.ModelSerializer):
         model = AlumniCard
         fields = '__all__'
 
+class CurrentBatchAlumniCardSerializaler(serializers.ModelSerializer):
+    photo = serializers.ImageField(max_length=None, use_url=True)
+    photo_sign = serializers.ImageField(max_length=None, use_url=True)
+    photo_degree = serializers.ImageField(max_length=None, use_url=True)
+    delivered= serializers.BooleanField(read_only=True)
+    def get_queryset():
+        queryset=User.objects.all()
+    class Meta:
+        model = CurrentBatchAlumniCard
+        fields = '__all__'
+
 
 class CustomEventSerializer(serializers.ListSerializer):
     def to_representation(self, data):

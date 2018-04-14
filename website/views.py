@@ -184,11 +184,32 @@ class AlumniCardRegisterView(APIView):
                     if user.alumniCard:
                         return Response({'message': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
                 except:
-                    serializer.save()
-                    return Response({'message': "Successfully Registered for Alumni card!"}, status=status.HTTP_201_CREATED)
+                    if serializer.is_valid(raise_exception=True):
+                        card = serializer.save()
+                        return Response('success', status=status.HTTP_202_ACCEPTED)
+                    return Response('ERROR Please check input!!',status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'message': "Not an Alumni"}, status=status.HTTP_400_BAD_REQUEST)
-         
+
+class CurrentBatchAlumniCardRegisterView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)  
+    serializer_class = CurrentBatchAlumniCardSerializaler
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        user = request.user
+        try:
+            if user.alum:
+                try:
+                    if user.currentAlumniCard:
+                        return Response({'message': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
+                except:
+                    if serializer.is_valid(raise_exception=True):
+                        card = serializer.save()
+                        return Response('success', status=status.HTTP_202_ACCEPTED)
+                    return Response('ERROR Please check input!!',status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'message': "Not an Alumni"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CheckAlumniCard(APIView):
