@@ -429,7 +429,7 @@ class Nominate(generics.ListCreateAPIView):
     serializer_class = DistinguishedAlumniSerializer
     def perform_create(self, serializer):
         nomination = serializer.save()
-        form = distinguishForm(instance=nomination)
+        form = DistinguishForm(instance=nomination)
         #Sending Acknowledgement Email
         context = {
         'form' : form ,
