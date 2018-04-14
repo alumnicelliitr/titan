@@ -424,7 +424,6 @@ class DistinguishedAlumniNominee(models.Model):
   nominee_awards = models.TextField(null=True,blank=True)
   nominee_photo = models.ImageField(blank=False,upload_to='distinguisted/images/')
   nominee_resume = models.FileField(blank=False,upload_to='distinguisted/resumes/')
-  nominee_optional1 = models.FileField(blank=True,upload_to='distinguisted/optional/')
   def __str__(self):
     try:
       nominator = self.nominator.get().nominator_name
