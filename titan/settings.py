@@ -8,7 +8,7 @@ SECRET_KEY = 'r3=(m(3##7b8#em63yi16*jd@ra$ujt(auc0j(uks9@!i)4oys'
 
 DEBUG = True
 
-CORS_ORIGIN_ALLOW_ALL = True 
+CORS_ORIGIN_ALLOW_ALL = True
 
 ALLOWED_HOSTS = ['*']
 

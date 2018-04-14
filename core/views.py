@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAdminUser
 from datetime import datetime
 import requests as http_requests
 from django.core.mail import EmailMultiAlternatives, get_connection
+from django.core.mail import EmailMessage as EmailMsg
 import urllib, ssl
 import os
 import json
@@ -420,22 +421,30 @@ class SkillCreate(generics.ListCreateAPIView):
         skill.save()
 
 
-class Nominate(APIView):
+from core.forms import *
 
-    def post(self, request):
-        if 'nominee' not in request.data or 'nominator' not in request.data:
-                return Response(
-                    'ERROR: Details is missing. Please check '
-                    'input!!',
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        request_data_nominee = json.loads(request.data['nominee'])
-        request_data_nominator = json.loads(request.data['nominator'])
-        nominee = DistinguishedAlumniNomineeSerializer(data=request_data_nominee)
-        if nominee.is_valid(raise_exception=True):
-            nom = nominee.save()
-            nominator = DistinguishedAlumniNominatorSerializer(data=request_data_nominator)
-            if nominee.is_valid(raise_exception=True):
-                nominator_data =  nominator.save(nominee = nom)
-                return Response('success', status=status.HTTP_202_ACCEPTED)
-        return Response('ERROR Please check input!!',status=status.HTTP_400_BAD_REQUEST)
+class Nominate(generics.ListCreateAPIView):
+    authentication_classes = []
+    queryset = DistinguishedAlumni.objects.all()
+    serializer_class = DistinguishedAlumniSerializer
+    def perform_create(self, serializer):
+        nomination = serializer.save()
+        form = distinguishForm(instance=nomination)
+        #Sending Acknowledgement Email
+        context = {
+        'form' : form ,
+        }
+        text = render_to_string('core/acknowledgement.html',context=context)
+        mail = EmailMsg('Nomination for DAA received',text,[nomination.nominee_email,nomination.nominator_email,'dora@iitr.ac.in','nikhilsheoran96@gmail.com'])
+        nominee_photo = nomination.nominee_photo.read()
+        nominee_resume = nomination.nominee_resume.read()
+        mail.attach(nomination.nominee_photo.name, nominee_photo)
+        mail.attach(nomination.nominee_resume.name, nominee_resume)
+        mail.send()
+
+        #Sending Details Mail
+        text = render_to_string('core/mail.html',context=context)
+        mail = EmailMsg('Distinguished Alumni Application',text,['dora@iitr.ac.in','nikhilsheoran96@gmail.com'])
+        mail.attach(nomination.nominee_photo.name, nominee_photo)
+        mail.attach(nomination.nominee_resume.name, nominee_resume)
+        mail.send()

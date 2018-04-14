@@ -155,15 +155,8 @@ class VisitorSerializer(serializers.ModelSerializer):
         read_only_fields = ('id','is_subscribed', 'subscription_key')
 
 
-class DistinguishedAlumniNomineeSerializer(serializers.ModelSerializer):
+class DistinguishedAlumniSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DistinguishedAlumniNominee
-        fields = '__all__'
-        read_only_fields = ('id',)
-
-
-class DistinguishedAlumniNominatorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DistinguishedAlumniNominator
+        model = DistinguishedAlumni
         fields = '__all__'
         read_only_fields = ('id',)

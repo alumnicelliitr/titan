@@ -15,8 +15,8 @@ admin.site.register(Alumni)
 admin.site.register(Social)
 admin.site.register(UserLocation)
 admin.site.register(Experience)
-admin.site.register(DistinguishedAlumniNominee)
-admin.site.register(DistinguishedAlumniNominator)
+admin.site.register(DistinguishedAlumni)
+
 
 
 

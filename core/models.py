@@ -402,7 +402,7 @@ class EmailMessage(models.Model):
 
 
 
-class DistinguishedAlumniNominee(models.Model):
+class DistinguishedAlumni(models.Model):
   CATEGORY_CHOICES = (
         ('AR', 'Academic Research',),
         ('CE', 'Corporate Development/Adminstration/Entrepreneurship',),
@@ -424,20 +424,10 @@ class DistinguishedAlumniNominee(models.Model):
   nominee_awards = models.TextField(null=True,blank=True)
   nominee_photo = models.ImageField(blank=False,upload_to='distinguisted/images/')
   nominee_resume = models.FileField(blank=False,upload_to='distinguisted/resumes/')
-  def __str__(self):
-    try:
-      nominator = self.nominator.get().nominator_name
-    except:
-      nominator = "NONE"
-    return self.nominee_name+" nominated by "+nominator
-
-
-class DistinguishedAlumniNominator(models.Model):
   CHOICES = (
     ('Y','Yes'),
     ('N','No'),
     )
-  nominee = models.ForeignKey(DistinguishedAlumniNominee,related_name='nominator')
   nominator_name = models.CharField(max_length=50)
   nominator_email = models.EmailField()
   nominator_contact = models.CharField(max_length=20)
@@ -446,4 +436,5 @@ class DistinguishedAlumniNominator(models.Model):
   nominator_affiliation = models.TextField()
   nominator_moreinfo = models.CharField(max_length=10,choices=CHOICES)
   def __str__(self):
-    return self.nominator_name+" nominated "+self.nominee.nominee_name
+    return self.nominator_name+" nominated "+self.nominee_name
+
