@@ -23,10 +23,12 @@ urlpatterns = [
 
     # Share Your Story
     url(r'^shareYourStory/$', ShareYourStoryView.as_view(), name='share-your-stories'),
+    url(r'^shareYourStory/(?P<pk>[0-9]+$)$', ShareYourStoryDetailView.as_view(), name='share-your-stories-detail'),
     # Alumni can register for Share You Story
     url(r'^shareYourStory/create$', ShareYourStoryCreateView.as_view(), name='share-your-stories-create'),
     # Know Your Alumni
     url(r'^knowYourAlum/$', KnowYourAlumniView.as_view(), name='know-your-alums'),
+    url(r'^knowYourAlum/(?P<pk>[0-9]+)/$', KnowYourAlumniDetailView.as_view(), name='know-your-alums-details'),
     # Alumni can register for Share You Story
     url(r'^knowYourAlum/create$', KnowYourAlumniCreateView.as_view(), name='know-your-alums-create'),
     # Nodes API for Header

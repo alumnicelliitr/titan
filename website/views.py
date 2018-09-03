@@ -60,6 +60,9 @@ class ShareYourStoryView(generics.ListAPIView):
     queryset = ShareYourStory.objects.all()
     serializer_class = ShareYourStorySerializer
 
+class ShareYourStoryDetailView(generics.RetrieveAPIView):
+    queryset = ShareYourStory.objects.all()
+    serializer_class = ShareYourStorySerializer
 
 class ShareYourStoryCreateView(generics.CreateAPIView):
     queryset = ShareYourStory.objects.all()
@@ -236,3 +239,7 @@ class NewsView(generics.ListAPIView):
 class NewsDetailedView(generics.RetrieveAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+
+class KnowYourAlumniDetailView(generics.RetrieveAPIView):
+    queryset = KnowYourAlumni.objects.all()
+    serializer_class = KnowYourAlumniSerializer

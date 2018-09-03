@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from core.models import *
 from django.db import models
+from ckeditor.fields import RichTextField
 from django_countries.fields import CountryField
 from core.models import User, BRANCHES
 import os
@@ -177,7 +178,7 @@ class KnowYourAlumni(models.Model):
     branch = models.CharField(max_length=10, choices=BRANCHES, verbose_name="Branch")
     # title = models.CharField(max_length=100, default=None, blank=True)
     link = models.URLField(default=None, null=True, verbose_name='External Link', blank=True)
-    description = models.TextField(default=None)
+    description = RichTextField(default='')
     thumbnail = models.ImageField(verbose_name='Thumbnail', upload_to='img/KnowYourAlum',
                                   default=None)  # TODO: make a dynamic folder
 
@@ -188,7 +189,7 @@ class KnowYourAlumni(models.Model):
 class ShareYourStory(models.Model):
     # user = models.ForeignKey(User, default=None, related_name='shareYourStory', on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=100, default=None, verbose_name='Story Title', blank=True, null=True)
-    description = models.TextField(default=None)
+    description = RichTextField(default='')
     link = models.URLField(default=None, verbose_name='Article Link', blank=True, null=True)
     thumbnail = models.ImageField(verbose_name='Image', upload_to='img/ShareYourStory',
                                   default=None)  # TODO: make a dynamic folder
@@ -313,7 +314,7 @@ class DonationScheme(models.Model):
 
 class News(models.Model):
     title = models.CharField(max_length=100, default=None, verbose_name='News Title', blank=False, null=False)
-    description = models.TextField(default=None)
+    description = RichTextField(default='')
     url = models.URLField(default=None, verbose_name='News Link', blank=True, null=True)
     thumbnail = models.ImageField(verbose_name='Image', upload_to='img/news',
                                   default=None)  # TODO: make a dynamic folder
