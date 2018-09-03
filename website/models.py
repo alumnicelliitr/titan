@@ -230,8 +230,8 @@ def get_file_path(instance, filename):
 
 
 ADDRESS_CHOICES = (
-	("Office Address","Office Address"),
-	("Residence Address","Residence Address")
+    ("Office Address","Office Address"),
+    ("Residence Address","Residence Address")
 )
 DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
 YEAR_CHOICES = ((x,x) for x in range(1847,2017))
@@ -261,7 +261,7 @@ class AlumniCard(models.Model):
     address_for_correspondence = models.CharField(default="Office Address", choices=ADDRESS_CHOICES, max_length=50)
 
     def __str__(self):
-		return self.first_name+" "+self.middle_name+" "+self.last_name
+        return self.first_name+" "+self.middle_name+" "+self.last_name
 
 class CurrentBatchAlumniCard(models.Model):
     user = models.OneToOneField(User, default=None, related_name='currentAlumniCard', on_delete=models.CASCADE)
@@ -288,7 +288,7 @@ class CurrentBatchAlumniCard(models.Model):
     address_for_correspondence = models.CharField(default="Office Address", choices=ADDRESS_CHOICES, max_length=50)
 
     def __str__(self):
-		return self.first_name+" "+self.middle_name+" "+self.last_name
+        return self.first_name+" "+self.middle_name+" "+self.last_name
 
 
 
@@ -324,4 +324,4 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
- 
+
