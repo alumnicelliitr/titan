@@ -112,7 +112,7 @@ class KnowYourAlumniCreateSerializer(serializers.ModelSerializer):
     thumbnail = serializers.ImageField(max_length=None, use_url=True)
     class Meta:
         model = KnowYourAlumni
-        fields = ('user', 'thumbnail', 'title', 'description', 'link')
+        fields = ('name', 'branch', 'year', 'thumbnail', 'title', 'description', 'link')
 
 
 class KnowYourAlumniSerializer(serializers.ModelSerializer):
@@ -199,4 +199,12 @@ class AwardSerializer(serializers.ModelSerializer):
 class DonationSchemeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonationScheme
+        fields = '__all__'
+
+
+class NewsSerializer(serializers.ModelSerializer):
+    # user = serializers.RelatedField(source='user', read_only=True)
+
+    class Meta:
+        model = News
         fields = '__all__'

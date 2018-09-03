@@ -39,4 +39,6 @@ urlpatterns = [
     # Donations API
     url(r'^donation_schemes/$', DonationSchemeListView.as_view(), name='awards' ),
     url(r'^alumni_card$', CheckAlumniCard.as_view(), name='alumni-card-check'),
+    url(r'^news/$', NewsView.as_view(), name='news-list'),
+    url(r'^news/(?P<pk>[0-9]+)/$', NewsDetailedView.as_view(), name='news-details'),
 ]

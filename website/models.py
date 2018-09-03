@@ -4,8 +4,9 @@ from __future__ import unicode_literals
 from core.models import *
 from django.db import models
 from django_countries.fields import CountryField
-from core.models import User
+from core.models import User, BRANCHES
 import os
+
 
 
 # TODO: Make a model for Awards
@@ -166,24 +167,26 @@ class Video(models.Model):
     def __str__(self):
         return self.title
 
-
 class KnowYourAlumni(models.Model):
     """
     Link in an external link such as medium blog.
     """
-    user = models.ForeignKey(User, default=None, related_name='knowYourAlum', on_delete=models.CASCADE, blank=True, null=True)
-    title = models.CharField(max_length=100, default=None, blank=True)
+    # user = models.ForeignKey(User, default=None, related_name='knowYourAlum', on_delete=models.CASCADE, blank=True, null=True)
+    name = models.CharField(default=None, max_length=50, verbose_name='Alumni Name')
+    year = models.PositiveIntegerField(default=None)
+    branch = models.CharField(max_length=10, choices=BRANCHES, verbose_name="Branch")
+    # title = models.CharField(max_length=100, default=None, blank=True)
     link = models.URLField(default=None, null=True, verbose_name='External Link', blank=True)
     description = models.TextField(default=None)
     thumbnail = models.ImageField(verbose_name='Thumbnail', upload_to='img/KnowYourAlum',
                                   default=None)  # TODO: make a dynamic folder
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class ShareYourStory(models.Model):
-    user = models.ForeignKey(User, default=None, related_name='shareYourStory', on_delete=models.CASCADE, blank=True, null=True)
+    # user = models.ForeignKey(User, default=None, related_name='shareYourStory', on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=100, default=None, verbose_name='Story Title', blank=True, null=True)
     description = models.TextField(default=None)
     link = models.URLField(default=None, verbose_name='Article Link', blank=True, null=True)
@@ -291,7 +294,7 @@ class CurrentBatchAlumniCard(models.Model):
 
 # Award Model to be checked
 class Award(models.Model):
-    title = models.CharField(max_length=500, default=None)
+    title = models.CharField(max_length=100, default=None)
     description = models.TextField(default=None)
     link = models.URLField(verbose_name='Donation Link')
 
@@ -301,9 +304,23 @@ class Award(models.Model):
 
 # donation model
 class DonationScheme(models.Model):
-    title = models.CharField(max_length=500, default=None, blank=False)
+    title = models.CharField(max_length=100, default=None, blank=False)
     description = models.TextField(default=None)
     link = models.URLField(default=None, blank=False, verbose_name='External Link')
 
     def __str__(self):
         return self.title
+
+class News(models.Model):
+    title = models.CharField(max_length=100, default=None, verbose_name='News Title', blank=False, null=False)
+    description = models.TextField(default=None)
+    url = models.URLField(default=None, verbose_name='News Link', blank=True, null=True)
+    thumbnail = models.ImageField(verbose_name='Image', upload_to='img/news',
+                                  default=None)  # TODO: make a dynamic folder
+    pub_date = models.DateTimeField(verbose_name='Published on', default=None)
+    expiry = models.DateTimeField(verbose_name='Expiry date', default=None)
+    short_desc = models.CharField(max_length=500, default=None, null=True, blank=True)
+
+    def __str__(self):
+        return self.title
+ 

@@ -225,3 +225,14 @@ class CheckAlumniCard(APIView):
                     return Response({'message': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
             except:    
                 return Response({'message': "Can register from Alumni card"}, status=status.HTTP_200_OK)
+
+class NewsView(generics.ListAPIView):
+    serializer_class = NewsSerializer
+
+    def get_queryset(self):
+        return News.objects.filter(expiry__gte=timezone.now())
+
+
+class NewsDetailedView(generics.RetrieveAPIView):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
