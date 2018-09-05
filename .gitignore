@@ -54,3 +54,9 @@ env/
 img/
 
 media/*
+
+# Environments
+venv
+env
+rr
+env1

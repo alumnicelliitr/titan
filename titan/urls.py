@@ -18,6 +18,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
+from rest_framework.authtoken import views as rest_framework_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -25,7 +26,9 @@ urlpatterns = [
     url(r'^oauth/', include('social_django.urls', namespace='social')),
     url(r'^newsletter/', include('newsletter.urls')),
     # url(r'^api/crowdfunding/', include('crowdfunding.urls', namespace='Crowdfunding')),
-    url(r'^api/website/', include('website.urls', namespace='Website'))
+    url(r'^api/website/', include('website.urls', namespace='Website')),
+    url(r'^docs/', include('rest_framework_docs.urls')),
+    url(r'^get_auth_token/$', rest_framework_views.obtain_auth_token, name='get_auth_token'),
 ]
 
 if settings.DEBUG:

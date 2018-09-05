@@ -1,25 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+
 from django.utils import timezone
-from rest_framework import generics
+from rest_framework import generics, status, authentication
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.permissions import (
     IsAuthenticated,
 )
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
-from django.core.serializers import serialize
-
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import  ObjectDoesNotExist
 from website.serializers import *
 
-
-class MemberList(generics.ListAPIView):
-    queryset = Member.objects.all()
-    serializer_class = MemberSerializer
-
-
+from core.models import User, Alumni
 class NewsLetterList(generics.ListAPIView):
     queryset = NewsLetter.objects.all()
     serializer_class = NewsLetterSerializer
@@ -32,25 +25,15 @@ class NewsLetterDetailView(generics.RetrieveAPIView):
 
 class EventDetailView(generics.RetrieveAPIView):
     queryset = Event.objects.all()
-
     serializer_class = EventDetailSerializer
 
 
-class UpcomingEventsList(generics.ListAPIView):
-    serializer_class = UpcomingEventSerializer
+class EventsList(generics.ListAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
 
-    def get_queryset(self):
-        """
-        This View should return all the upcoming events
-        """
-        return Event.objects.filter(date__gte=timezone.now())
-
-
-class PastEventsList(generics.ListAPIView):
-    serializer_class = PastEventSerializer
-
-    def get_queryset(self):
-        return Event.objects.filter(date__lt=timezone.now())
+    # def get_queryset(self):
+    #     return Event.objects.filter(end_date__gte=timezone.now())
 
 
 class MoUListView(generics.ListAPIView):
@@ -77,8 +60,186 @@ class ShareYourStoryView(generics.ListAPIView):
     queryset = ShareYourStory.objects.all()
     serializer_class = ShareYourStorySerializer
 
+class ShareYourStoryDetailView(generics.RetrieveAPIView):
+    queryset = ShareYourStory.objects.all()
+    serializer_class = ShareYourStorySerializer
 
 class ShareYourStoryCreateView(generics.CreateAPIView):
     queryset = ShareYourStory.objects.all()
     serializer_class = ShareYourStoryCreateSerializer
-    permission_classes = [IsAuthenticated]
+
+    # def perform_create(self, serializer):
+    #     print(self.request.user)
+    #     if not self.request.user:
+    #         return Response({'detail': "Not logged In"}, status=status.HTTP_404_NOT_FOUND)
+    #
+    #     user = get_object_or_404(User, pk=self.request.user)
+    #     serializer.save(user=user.username)
+
+
+class KnowYourAlumniView(generics.ListAPIView):
+    queryset = KnowYourAlumni.objects.all()
+    serializer_class = KnowYourAlumniSerializer
+
+
+class KnowYourAlumniCreateView(generics.CreateAPIView):
+    queryset = KnowYourAlumni.objects.all()
+    serializer_class = KnowYourAlumniCreateSerializer
+
+    # def perform_create(self, serializer):
+    #     print(self.request.user)
+    #     user = get_object_or_404(User, pk=self.request.user.id)
+    #     serializer.save(user=user.username)
+
+
+# class HeadlinesTrendingListView(generics.ListAPIView):
+#     serializer_class = HeadlinesSerializer
+#
+#     def get_queryset(self):
+#         return Headline.objects.filter(mainPage=False)
+#
+#
+class NodeViews(APIView):
+    def get(self, request, format=None):
+        nodes = Node.objects.all()
+        stuff = load_nodes(0)
+        print(stuff)
+        s = NodeSerializer(stuff)
+        print(s)
+        serializer = []
+        i = 0
+        # x = Node.objects.filter(Q(parent=my_person) | Q(parent__parent=my_person) | Q(parent__parent__parent=my_person))
+        for node in nodes:
+            serializer_data = NodeSerializer(node.get_all_children(), many=True)
+            # if len(serializer_data.data) > 1 and serializer_data.data[0]['level'] == 0:
+            serializer.append(serializer_data.data)
+        for i in serializer:
+            for j in i:
+                j['url_name']
+        return Response(serializer)
+
+
+# class NodeViews(generics.CreateAPIView):
+#     queryset = Node.objects.all()
+#     print(queryset)
+#     serializer_class = NodeSerializer
+
+class AwardsListView(generics.ListAPIView):
+    queryset = Award.objects.all()
+    serializer_class = AwardSerializer
+
+
+class DonationSchemeListView(generics.ListAPIView):
+    queryset = DonationScheme.objects.all()
+    serializer_class = DonationSchemeSerializer
+
+
+def load_nodes(level, parent=None):
+    mTabs = Node.objects.filter(visibility=True, level=level, parent=parent)
+    # serializer = NodeSerializer(mTabs)
+    for tab in mTabs:
+        if tab.external_url:
+            tab.url = tab.external_url
+        else:
+            try:
+                if parent.url:
+                    tab.url = parent.url + "/" + tab.url_name
+                else:
+                    tab.url = "/" + tab.url_name
+            except:
+                tab.url = "/" + tab.url_name
+        tab.children = load_nodes(level + 1, tab)
+        print(tab)
+    return mTabs
+
+
+def load_level(url_name, level=0):
+    try:
+        active = Node.objects.filter(level=level, url_name=url_name).get()
+        active.url = "/" + url_name
+        active.children = load_nodes(level + 1, active)
+        return active
+    except:
+        return None
+
+
+def level(request, level0, level1=None, level2=None):
+    mTabs = load_nodes(0, None)
+    if level1 == None:
+        active = load_level(level0, 0)
+    elif level2 == None:
+        active = load_level(level1, 1)
+    else:
+        active = load_level(level2, 2)
+    base = load_level(level0, 0)
+
+
+class AlumniCardRegisterView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)  
+    serializer_class = AlumniCardSerializaler
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        user = request.user
+        try:
+            if user.alum:
+                try:
+                    if user.alumniCard:
+                        return Response({'message': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
+                except:
+                    if serializer.is_valid(raise_exception=True):
+                        card = serializer.save()
+                        return Response('success', status=status.HTTP_202_ACCEPTED)
+                    return Response('ERROR Please check input!!',status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'message': "Not an Alumni"}, status=status.HTTP_400_BAD_REQUEST)
+
+class CurrentBatchAlumniCardRegisterView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)  
+    serializer_class = CurrentBatchAlumniCardSerializaler
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        user = request.user
+        try:
+            if user.alum:
+                try:
+                    if user.currentAlumniCard:
+                        return Response({'message': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
+                except:
+                    if serializer.is_valid(raise_exception=True):
+                        card = serializer.save()
+                        return Response('success', status=status.HTTP_202_ACCEPTED)
+                    return Response('ERROR Please check input!!',status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'message': "Not an Alumni"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CheckAlumniCard(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    def get(self, request, format=None):
+        user = request.user
+        try:
+            if user.alum:
+               return Response({'message': "Not an Alumni"}, status=status.HTTP_400_BAD_REQUEST) 
+        except ObjectDoesNotExist:
+            try:
+                if user.alumniCard:
+                    return Response({'message': "Already registered for alumni card"}, status=status.HTTP_400_BAD_REQUEST)
+            except:    
+                return Response({'message': "Can register from Alumni card"}, status=status.HTTP_200_OK)
+
+class NewsView(generics.ListAPIView):
+    serializer_class = NewsSerializer
+
+    def get_queryset(self):
+        return News.objects.filter(expiry__gte=timezone.now())
+
+
+class NewsDetailedView(generics.RetrieveAPIView):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
+
+class KnowYourAlumniDetailView(generics.RetrieveAPIView):
+    queryset = KnowYourAlumni.objects.all()
+    serializer_class = KnowYourAlumniSerializer
